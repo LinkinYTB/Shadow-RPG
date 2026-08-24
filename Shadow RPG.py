@@ -1,5 +1,3 @@
-# SHADOW RPG — Code complet avec les Abysses
-
 import tkinter as tk
 from tkinter import messagebox
 import random
@@ -44,6 +42,12 @@ class ShadowRPG:
         self.potions = 3
 
         self.mobs_vaincus = 0
+
+        # ====================================================
+        # ÉPÉE SECRÈTE
+        # ====================================================
+
+        self.epee_secrete_decouverte = False
 
         # ====================================================
         # EASTER EGGS
@@ -128,6 +132,17 @@ class ShadowRPG:
                 "attaque": 70,
                 "prix": 3000,
                 "niveau_requis": 20,
+                "niveau": 1
+            },
+
+            # =================================================
+            # ÉPÉE SECRÈTE
+            # =================================================
+
+            "Lame du Héro Absolu": {
+                "attaque": 200,
+                "prix": 5000,
+                "niveau_requis": 25,
                 "niveau": 1
             }
         }
@@ -266,15 +281,11 @@ class ShadowRPG:
                 "boss_stats": [2000, 95, 50, 700, 600]
             },
 
-            # =================================================
-            # CITADELLE DÉCHUE
-            # =================================================
-
             "Citadelle déchue": {
                 "niveau": 20,
                 "boss": "Chevalier Déchu",
                 "boss_vaincu": False,
-                "mobs_requis": 65,
+                "mobs_requis": 75,
 
                 "monstres": [
                     ["Soldat déchu", 1400, 90, 45, 350, 300],
@@ -291,17 +302,17 @@ class ShadowRPG:
 
             "Abysses": {
                 "niveau": 25,
-                "boss": "Seigneur des Ombres",
+                "boss": "Seigneur des Abysses",
                 "boss_vaincu": False,
-                "mobs_requis": 80,
+                "mobs_requis": 100,
 
                 "monstres": [
-                    ["Démon abyssal", 2200, 140, 70, 550, 500],
-                    ["Gardien des Abysses", 2600, 155, 80, 650, 600],
-                    ["Créature abyssale", 3000, 170, 90, 750, 700]
+                    ["Démon des Abysses", 2500, 140, 75, 600, 500],
+                    ["Créature abyssale", 3000, 155, 85, 700, 600],
+                    ["Chevalier abyssal", 3500, 170, 100, 800, 700]
                 ],
 
-                "boss_stats": [5000, 180, 100, 1500, 1200]
+                "boss_stats": [6000, 190, 120, 1500, 1200]
             },
 
             # =================================================
@@ -312,7 +323,7 @@ class ShadowRPG:
                 "niveau": 1,
                 "boss": "Shadow",
                 "boss_vaincu": False,
-                "mobs_requis": 200,
+                "mobs_requis": 100,
 
                 "monstres": [
                     ["Créature ???", 1000, 70, 40, 250, 250],
@@ -937,10 +948,6 @@ class ShadowRPG:
                 )
             )
 
-        # ====================================================
-        # FIN DU COMBAT
-        # ====================================================
-
         def fermer_combat():
 
             if fenetre.winfo_exists():
@@ -1008,7 +1015,7 @@ class ShadowRPG:
                 elif zone_boss == "Abysses":
 
                     log(
-                        "Le Seigneur des Ombres est tombé !"
+                        "Le Seigneur des Abysses est tombé !"
                     )
 
                     log(
@@ -1081,9 +1088,7 @@ class ShadowRPG:
                         f"Tu infliges {degats} dégâts !"
                     )
 
-                    # =================================================
                     # COUP CRITIQUE
-                    # =================================================
 
                     if random.randint(1, 100) <= 10:
 
@@ -1098,9 +1103,7 @@ class ShadowRPG:
                             f"+{degats_crit} dégâts !"
                         )
 
-                    # =================================================
                     # FAUX DES TENEBRES
-                    # =================================================
 
                     if self.arme_equipee == "Faux des ténèbres":
 
@@ -1120,9 +1123,7 @@ class ShadowRPG:
                             f"te soigne de {soin} PV."
                         )
 
-                    # =================================================
                     # LAME DU CHEVALIER DECHU
-                    # =================================================
 
                     if self.arme_equipee == "Lame du Chevalier Déchu":
 
@@ -1142,9 +1143,27 @@ class ShadowRPG:
                             f"te soigne de {soin} PV."
                         )
 
-                    # =================================================
+                    # EPEE DES ABYSSES
+
+                    if self.arme_equipee == "Lame du Héro Absolu":
+
+                        soin = int(
+                            degats * 0.60
+                        )
+
+                        if self.pv != float("inf"):
+
+                            self.pv = min(
+                                self.get_pv_max(),
+                                self.pv + soin
+                            )
+
+                        log(
+                            f"L'Lame du Héro Absolu "
+                            f"te soigne de {soin} PV."
+                        )
+
                     # SANS
-                    # =================================================
 
                     if self.nom == "sans":
 
@@ -1391,29 +1410,10 @@ class ShadowRPG:
                 padx=8
             )
 
-        bouton_combat(
-            "Attaquer",
-            attaque,
-            0
-        )
-
-        bouton_combat(
-            "Défendre",
-            defendre,
-            1
-        )
-
-        bouton_combat(
-            "Potion",
-            potion,
-            2
-        )
-
-        bouton_combat(
-            "Fuir",
-            fuir,
-            3
-        )
+        bouton_combat("Attaquer", attaque, 0)
+        bouton_combat("Défendre", defendre, 1)
+        bouton_combat("Potion", potion, 2)
+        bouton_combat("Fuir", fuir, 3)
 
         actualiser_combat()
 
@@ -1609,7 +1609,7 @@ class ShadowRPG:
         self.actualiser()
 
     # ========================================================
-    # ZONE SECRÈTE
+    # ZONE SECRETE
     # ========================================================
 
     def zone_secret(self):
@@ -1782,6 +1782,10 @@ class ShadowRPG:
             True
         )
 
+        # ====================================================
+        # TITRE
+        # ====================================================
+
         tk.Label(
             fenetre,
             text="BOUTIQUE",
@@ -1789,6 +1793,10 @@ class ShadowRPG:
             fg="white",
             font=("Arial", 28, "bold")
         ).pack(pady=15)
+
+        # ====================================================
+        # BOUTON QUITTER
+        # ====================================================
 
         bouton_quitter = tk.Button(
             fenetre,
@@ -1809,6 +1817,10 @@ class ShadowRPG:
             anchor="ne"
         )
 
+        # ====================================================
+        # PIECES
+        # ====================================================
+
         tk.Label(
             fenetre,
             text=f"Pièces : {self.pieces}",
@@ -1816,6 +1828,10 @@ class ShadowRPG:
             fg="white",
             font=("Arial", 16)
         ).pack(pady=5)
+
+        # ====================================================
+        # POTION
+        # ====================================================
 
         tk.Button(
             fenetre,
@@ -1829,6 +1845,10 @@ class ShadowRPG:
             height=1
         ).pack(pady=5)
 
+        # ====================================================
+        # ARMES
+        # ====================================================
+
         tk.Label(
             fenetre,
             text="ARMES",
@@ -1838,6 +1858,14 @@ class ShadowRPG:
         ).pack(pady=8)
 
         for arme, info in self.armes.items():
+
+            # L'épée secrète ne doit pas être visible
+            # avant sa découverte.
+
+            if arme == "Lame du Héro Absolu":
+
+                if not self.epee_secrete_decouverte:
+                    continue
 
             if arme in self.inventaire_armes:
                 continue
@@ -1862,6 +1890,10 @@ class ShadowRPG:
                 height=1,
                 font=("Arial", 9)
             ).pack(pady=2)
+
+        # ====================================================
+        # ARMURES
+        # ====================================================
 
         tk.Label(
             fenetre,
@@ -1898,6 +1930,10 @@ class ShadowRPG:
                 font=("Arial", 9)
             ).pack(pady=2)
 
+        # ====================================================
+        # AMELIORATIONS
+        # ====================================================
+
         tk.Label(
             fenetre,
             text="AMÉLIORATIONS",
@@ -1929,6 +1965,64 @@ class ShadowRPG:
             width=28,
             height=1
         ).pack(pady=3)
+
+        # ====================================================
+        # BOUTON SECRET INVISIBLE
+        # ====================================================
+
+        bouton_secret = tk.Button(
+            fenetre,
+            text="",
+            command=lambda: self.decouvrir_epee_secrete(fenetre),
+            bg="black",
+            activebackground="black",
+            relief="flat",
+            bd=0,
+            highlightthickness=0,
+            width=4,
+            height=2
+        )
+
+        bouton_secret.place(
+            relx=0.0,
+            rely=1.0,
+            anchor="sw"
+        )
+
+    # ========================================================
+    # DÉCOUVRIR L'ÉPÉE SECRÈTE
+    # ========================================================
+
+    def decouvrir_epee_secrete(self, fenetre):
+
+        if self.epee_secrete_decouverte:
+
+            self.message(
+                "Tu as déjà découvert le secret..."
+            )
+
+            return
+
+        self.epee_secrete_decouverte = True
+
+        self.afficher(
+            "Une forge sous terraine est apparu !"
+        )
+
+        self.message(
+            "Tu as découvert une arme secrète !\n\n"
+            "Lame du Héro Absolu\n"
+            "+100 ATK\n"
+            "Prix : 5000 pièces\n"
+            "Niveau requis : 25"
+        )
+
+        # Ferme la boutique pour pouvoir la rouvrir
+        # avec l'épée désormais visible.
+
+        fenetre.destroy()
+
+        self.actualiser()
 
     # ========================================================
     # ACHETER POTION
@@ -1978,6 +2072,7 @@ class ShadowRPG:
             return
 
         self.pieces -= info["prix"]
+
         self.inventaire_armes.append(arme)
 
         self.afficher(
@@ -2011,6 +2106,7 @@ class ShadowRPG:
             return
 
         self.pieces -= info["prix"]
+
         self.inventaire_armures.append(armure)
 
         self.afficher(
@@ -2047,6 +2143,7 @@ class ShadowRPG:
             return
 
         self.pieces -= prix
+
         arme["niveau"] += 1
 
         self.afficher(
@@ -2084,6 +2181,7 @@ class ShadowRPG:
             return
 
         self.pieces -= prix
+
         armure["niveau"] += 1
 
         self.afficher(
