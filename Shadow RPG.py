@@ -44,10 +44,61 @@ class ShadowRPG:
         self.mobs_vaincus = 0
 
         # ====================================================
+        # MANA
+        # ====================================================
+
+        self.mana_max = 100
+        self.mana = 100
+
+        # ====================================================
         # ÉPÉE SECRÈTE
         # ====================================================
 
         self.epee_secrete_decouverte = False
+
+        # ====================================================
+        # SORTS
+        # ====================================================
+
+        self.sorts = {
+
+            "Boule de feu": {
+                "cout": 20,
+                "coefficient": 1.25,
+                "prix": 250,
+                "niveau_requis": 3
+            },
+
+            "Éclair": {
+                "cout": 30,
+                "coefficient": 1.60,
+                "prix": 500,
+                "niveau_requis": 6
+            },
+
+            "Frappe des ombres": {
+                "cout": 40,
+                "coefficient": 2.00,
+                "prix": 1000,
+                "niveau_requis": 10
+            },
+
+            "Drain d'âme": {
+                "cout": 35,
+                "coefficient": 1.30,
+                "prix": 1500,
+                "niveau_requis": 12
+            },
+
+            "Annihilation": {
+                "cout": 70,
+                "coefficient": 3.00,
+                "prix": 3500,
+                "niveau_requis": 20
+            }
+        }
+
+        self.sorts_appris = []
 
         # ====================================================
         # EASTER EGGS
@@ -86,6 +137,8 @@ class ShadowRPG:
             self.mobs_vaincus = 9999
             self.attaque_base = 9999
             self.defense_base = 9999
+            self.mana_max = 9999
+            self.mana = 9999
 
         # ====================================================
         # ARMES
@@ -359,9 +412,7 @@ class ShadowRPG:
         fenetre.transient(self.root)
         fenetre.grab_set()
 
-        resultat = {
-            "nom": "Aventurier"
-        }
+        resultat = {"nom": "Aventurier"}
 
         tk.Label(
             fenetre,
@@ -407,7 +458,7 @@ class ShadowRPG:
         return resultat["nom"]
 
     # ========================================================
-    # QUITTER AVEC ECHAP
+    # QUITTER
     # ========================================================
 
     def quitter_jeu(self, event=None):
@@ -569,6 +620,10 @@ class ShadowRPG:
             + (armure["niveau"] - 1) * 10
         )
 
+    def get_mana_max(self):
+
+        return self.mana_max + (self.niveau - 1) * 5
+
     # ========================================================
     # ACTUALISER
     # ========================================================
@@ -576,11 +631,15 @@ class ShadowRPG:
     def actualiser(self):
 
         pv_max = self.get_pv_max()
+        mana_max = self.get_mana_max()
 
         if self.pv != float("inf"):
 
             if self.pv > pv_max:
                 self.pv = pv_max
+
+        if self.mana > mana_max:
+            self.mana = mana_max
 
         self.stats.config(
             text=(
@@ -588,6 +647,7 @@ class ShadowRPG:
                 f"Niveau : {self.niveau}    "
                 f"XP : {self.xp}/{self.niveau * 50}\n"
                 f"PV : {self.pv}/{pv_max}    "
+                f"Mana : {self.mana}/{mana_max}    "
                 f"Attaque : {self.get_attaque()}    "
                 f"Défense : {self.get_defense()}    "
                 f"Pièces : {self.pieces}    "
@@ -869,6 +929,29 @@ class ShadowRPG:
         )
 
     # ========================================================
+    # CALCUL DÉGÂTS D'UN SORT
+    # ========================================================
+
+    def calcul_degats_sort(self, sort_nom, defense_ennemi):
+
+        sort = self.sorts[sort_nom]
+
+        # Les sorts sont directement liés aux dégâts
+        # que le joueur ferait avec son attaque à l'épée.
+
+        attaque_base_sort = self.get_attaque() * sort["coefficient"]
+
+        variation = random.uniform(0.90, 1.10)
+
+        degats = int(
+            attaque_base_sort * variation
+        )
+
+        degats -= defense_ennemi
+
+        return max(1, degats)
+
+    # ========================================================
     # COMBAT
     # ========================================================
 
@@ -942,7 +1025,8 @@ class ShadowRPG:
             label.config(
                 text=(
                     f"{self.nom} : "
-                    f"{self.pv}/{self.get_pv_max()}\n\n"
+                    f"{self.pv}/{self.get_pv_max()} PV    "
+                    f"{self.mana}/{self.get_mana_max()} Mana\n\n"
                     f"{nom_ennemi} : "
                     f"{max(0, pv_ennemi)} PV"
                 )
@@ -976,10 +1060,19 @@ class ShadowRPG:
             self.xp += xp_gain
             self.pieces += pieces_gain
 
+            # Récupération de mana après le combat
+            mana_recup = int(self.get_mana_max() * 0.15)
+
+            self.mana = min(
+                self.get_mana_max(),
+                self.mana + mana_recup
+            )
+
             log("")
             log("VICTOIRE !")
             log(f"+{xp_gain} XP")
             log(f"+{pieces_gain} pièces")
+            log(f"+{mana_recup} Mana")
 
             if boss and zone_boss:
 
@@ -1006,10 +1099,6 @@ class ShadowRPG:
 
                     log(
                         "Le Chevalier Déchu est tombé !"
-                    )
-
-                    log(
-                        "La Citadelle déchue est désormais conquise."
                     )
 
                 elif zone_boss == "Abysses":
@@ -1103,13 +1192,11 @@ class ShadowRPG:
                             f"+{degats_crit} dégâts !"
                         )
 
-                    # FAUX DES TENEBRES
+                    # FAUX DES TÉNÈBRES
 
                     if self.arme_equipee == "Faux des ténèbres":
 
-                        soin = int(
-                            degats * 0.25
-                        )
+                        soin = int(degats * 0.25)
 
                         if self.pv != float("inf"):
 
@@ -1123,13 +1210,11 @@ class ShadowRPG:
                             f"te soigne de {soin} PV."
                         )
 
-                    # LAME DU CHEVALIER DECHU
+                    # LAME DU CHEVALIER DÉCHU
 
                     if self.arme_equipee == "Lame du Chevalier Déchu":
 
-                        soin = int(
-                            degats * 0.50
-                        )
+                        soin = int(degats * 0.50)
 
                         if self.pv != float("inf"):
 
@@ -1143,13 +1228,11 @@ class ShadowRPG:
                             f"te soigne de {soin} PV."
                         )
 
-                    # EPEE DES ABYSSES
+                    # LAME DU HÉRO ABSOLU
 
                     if self.arme_equipee == "Lame du Héro Absolu":
 
-                        soin = int(
-                            degats * 0.60
-                        )
+                        soin = int(degats * 0.60)
 
                         if self.pv != float("inf"):
 
@@ -1159,7 +1242,7 @@ class ShadowRPG:
                             )
 
                         log(
-                            f"L'Lame du Héro Absolu "
+                            f"La Lame du Héro Absolu "
                             f"te soigne de {soin} PV."
                         )
 
@@ -1190,7 +1273,169 @@ class ShadowRPG:
             tour_ennemi()
 
         # ====================================================
-        # DEFENDRE
+        # SORT
+        # ====================================================
+
+        def lancer_sort(sort_nom):
+
+            nonlocal pv_ennemi
+
+            if combat_termine[0]:
+                return
+
+            sort = self.sorts[sort_nom]
+            cout = sort["cout"]
+
+            if self.mana < cout:
+
+                log(
+                    f"Pas assez de mana ! "
+                    f"Il faut {cout} mana."
+                )
+
+                return
+
+            self.mana -= cout
+
+            degats = self.calcul_degats_sort(
+                sort_nom,
+                defense_ennemi
+            )
+
+            pv_ennemi -= degats
+
+            log("")
+            log(
+                f"Tu lances {sort_nom} !"
+            )
+
+            log(
+                f"{sort_nom} inflige "
+                f"{degats} dégâts !"
+            )
+
+            # =================================================
+            # DRAIN D'ÂME
+            # =================================================
+
+            if sort_nom == "Drain d'âme":
+
+                # Le soin dépend des dégâts infligés ET
+                # des PV maximum du joueur.
+                #
+                # Plus tes PV max sont élevés,
+                # plus Drain d'âme devient puissant.
+
+                ratio_pv = self.get_pv_max() / 100
+
+                soin = int(
+                    degats * 0.40
+                    + ratio_pv * 10
+                )
+
+                soin = max(
+                    soin,
+                    int(self.get_pv_max() * 0.10)
+                )
+
+                if self.pv != float("inf"):
+
+                    ancien_pv = self.pv
+
+                    self.pv = min(
+                        self.get_pv_max(),
+                        self.pv + soin
+                    )
+
+                    soin_reel = self.pv - ancien_pv
+
+                else:
+
+                    soin_reel = soin
+
+                log(
+                    f"Drain d'âme te rend "
+                    f"{soin_reel} PV."
+                )
+
+            if pv_ennemi <= 0:
+
+                victoire()
+                return
+
+            actualiser_combat()
+
+            tour_ennemi()
+
+        # ====================================================
+        # MENU SORTS EN COMBAT
+        # ====================================================
+
+        def menu_sorts_combat():
+
+            if combat_termine[0]:
+                return
+
+            if not self.sorts_appris:
+
+                log(
+                    "Tu n'as appris aucun sort."
+                )
+
+                return
+
+            menu = tk.Toplevel(fenetre)
+
+            menu.title("Sorts")
+            menu.configure(bg="black")
+
+            menu.transient(fenetre)
+            menu.grab_set()
+
+            tk.Label(
+                menu,
+                text="SORTS",
+                bg="black",
+                fg="white",
+                font=("Arial", 20, "bold")
+            ).pack(pady=15)
+
+            for sort_nom in self.sorts_appris:
+
+                sort = self.sorts[sort_nom]
+
+                tk.Button(
+                    menu,
+                    text=(
+                        f"{sort_nom}  |  "
+                        f"{sort['cout']} Mana"
+                    ),
+                    command=lambda s=sort_nom: (
+                        menu.destroy(),
+                        lancer_sort(s)
+                    ),
+                    bg="#202020",
+                    fg="white",
+                    activebackground="#404040",
+                    activeforeground="white",
+                    width=35,
+                    height=2
+                ).pack(pady=5)
+
+            tk.Button(
+                menu,
+                text="Retour",
+                command=menu.destroy,
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=20,
+                height=2
+            ).pack(pady=15)
+
+        # ====================================================
+        # DÉFENDRE
         # ====================================================
 
         def defendre():
@@ -1401,19 +1646,20 @@ class ShadowRPG:
                 fg="white",
                 activebackground="#404040",
                 activeforeground="white",
-                width=18,
+                width=16,
                 height=2,
-                font=("Arial", 12, "bold")
+                font=("Arial", 11, "bold")
             ).grid(
                 row=0,
                 column=colonne,
-                padx=8
+                padx=5
             )
 
         bouton_combat("Attaquer", attaque, 0)
-        bouton_combat("Défendre", defendre, 1)
-        bouton_combat("Potion", potion, 2)
-        bouton_combat("Fuir", fuir, 3)
+        bouton_combat("Sorts", menu_sorts_combat, 1)
+        bouton_combat("Défendre", defendre, 2)
+        bouton_combat("Potion", potion, 3)
+        bouton_combat("Fuir", fuir, 4)
 
         actualiser_combat()
 
@@ -1433,11 +1679,19 @@ class ShadowRPG:
             self.attaque_base += 3
             self.defense_base += 2
 
+            # Bonus de mana par niveau
+            self.mana_max += 5
+
             self.pv = self.get_pv_max()
+            self.mana = self.get_mana_max()
 
             self.afficher(
                 f"LEVEL UP ! Tu es maintenant "
                 f"niveau {self.niveau}."
+            )
+
+            self.afficher(
+                "+5 Mana maximum."
             )
 
     # ========================================================
@@ -1609,7 +1863,7 @@ class ShadowRPG:
         self.actualiser()
 
     # ========================================================
-    # ZONE SECRETE
+    # ZONE SECRÈTE
     # ========================================================
 
     def zone_secret(self):
@@ -1694,6 +1948,40 @@ class ShadowRPG:
 
         tk.Label(
             fenetre,
+            text="SORTS APPRIS",
+            bg="black",
+            fg="white",
+            font=("Arial", 18, "bold")
+        ).pack(pady=20)
+
+        if self.sorts_appris:
+
+            for sort_nom in self.sorts_appris:
+
+                sort = self.sorts[sort_nom]
+
+                tk.Label(
+                    fenetre,
+                    text=(
+                        f"{sort_nom} | "
+                        f"{sort['cout']} Mana"
+                    ),
+                    bg="black",
+                    fg="white",
+                    font=("Arial", 12)
+                ).pack(pady=2)
+
+        else:
+
+            tk.Label(
+                fenetre,
+                text="Aucun sort appris.",
+                bg="black",
+                fg="white"
+            ).pack()
+
+        tk.Label(
+            fenetre,
             text="ARMURES",
             bg="black",
             fg="white",
@@ -1739,7 +2027,7 @@ class ShadowRPG:
         ).pack(pady=30)
 
     # ========================================================
-    # EQUIPER ARME
+    # ÉQUIPER ARME
     # ========================================================
 
     def equiper_arme(self, arme):
@@ -1753,7 +2041,7 @@ class ShadowRPG:
         self.actualiser()
 
     # ========================================================
-    # EQUIPER ARMURE
+    # ÉQUIPER ARMURE
     # ========================================================
 
     def equiper_armure(self, armure):
@@ -1783,16 +2071,304 @@ class ShadowRPG:
         )
 
         # ====================================================
+        # CONTENEUR SCROLLABLE
+        # ====================================================
+
+        canvas = tk.Canvas(
+            fenetre,
+            bg="black",
+            highlightthickness=0
+        )
+
+        scrollbar = tk.Scrollbar(
+            fenetre,
+            orient="vertical",
+            command=canvas.yview
+        )
+
+        contenu = tk.Frame(
+            canvas,
+            bg="black"
+        )
+
+        contenu.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window(
+            (0, 0),
+            window=contenu,
+            anchor="nw"
+        )
+
+        canvas.configure(
+            yscrollcommand=scrollbar.set
+        )
+
+        canvas.pack(
+            side="left",
+            fill="both",
+            expand=True
+        )
+
+        scrollbar.pack(
+            side="right",
+            fill="y"
+        )
+
+        # ====================================================
         # TITRE
         # ====================================================
 
         tk.Label(
-            fenetre,
+            contenu,
             text="BOUTIQUE",
             bg="black",
             fg="white",
             font=("Arial", 28, "bold")
         ).pack(pady=15)
+
+        tk.Label(
+            contenu,
+            text=f"Pièces : {self.pieces}",
+            bg="black",
+            fg="white",
+            font=("Arial", 16)
+        ).pack(pady=5)
+
+        # ====================================================
+        # POTIONS
+        # ====================================================
+
+        tk.Label(
+            contenu,
+            text="CONSOMMABLES",
+            bg="black",
+            fg="white",
+            font=("Arial", 18, "bold")
+        ).pack(pady=8)
+
+        tk.Button(
+            contenu,
+            text="Potion - 10 pièces",
+            command=self.acheter_potion,
+            bg="#202020",
+            fg="white",
+            activebackground="#404040",
+            activeforeground="white",
+            width=30,
+            height=2
+        ).pack(pady=4)
+
+        # ====================================================
+        # ARMES
+        # ====================================================
+
+        tk.Label(
+            contenu,
+            text="ARMES",
+            bg="black",
+            fg="white",
+            font=("Arial", 18, "bold")
+        ).pack(pady=12)
+
+        for arme, info in self.armes.items():
+
+            if arme == "Lame du Héro Absolu":
+
+                if not self.epee_secrete_decouverte:
+                    continue
+
+            if arme in self.inventaire_armes:
+                continue
+
+            texte = (
+                f"{arme} | "
+                f"+{info['attaque']} ATK | "
+                f"{info['prix']} pièces | "
+                f"Niv. {info['niveau_requis']}"
+            )
+
+            tk.Button(
+                contenu,
+                text=texte,
+                command=lambda a=arme:
+                self.acheter_arme(a),
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=60,
+                height=2,
+                font=("Arial", 10)
+            ).pack(pady=3)
+
+        # ====================================================
+        # SORTS
+        # ====================================================
+
+        tk.Label(
+            contenu,
+            text="SORTS",
+            bg="black",
+            fg="white",
+            font=("Arial", 18, "bold")
+        ).pack(pady=(25, 8))
+
+        tk.Label(
+            contenu,
+            text=(
+                "Apprends des sorts utilisant du mana. "
+                "Les dégâts dépendent de ton attaque à l'épée."
+            ),
+            bg="black",
+            fg="white",
+            font=("Arial", 11),
+            wraplength=700
+        ).pack(pady=4)
+
+        for sort_nom, info in self.sorts.items():
+
+            if sort_nom in self.sorts_appris:
+                texte = (
+                    f"{sort_nom} | "
+                    f"{info['cout']} Mana | "
+                    f"APPRIS"
+                )
+
+            else:
+                texte = (
+                    f"{sort_nom} | "
+                    f"{info['cout']} Mana | "
+                    f"{info['prix']} pièces | "
+                    f"Niv. {info['niveau_requis']}"
+                )
+
+            tk.Button(
+                contenu,
+                text=texte,
+                command=lambda s=sort_nom:
+                self.apprendre_sort(s),
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=60,
+                height=2,
+                font=("Arial", 10)
+            ).pack(pady=3)
+
+        # ====================================================
+        # ARMURES
+        # ====================================================
+
+        tk.Label(
+            contenu,
+            text="ARMURES",
+            bg="black",
+            fg="white",
+            font=("Arial", 18, "bold")
+        ).pack(pady=15)
+
+        for armure, info in self.armures.items():
+
+            if armure in self.inventaire_armures:
+                continue
+
+            texte = (
+                f"{armure} | "
+                f"+{info['defense']} DEF | "
+                f"+{info['pv']} PV | "
+                f"{info['prix']} pièces | "
+                f"Niv. {info['niveau_requis']}"
+            )
+
+            tk.Button(
+                contenu,
+                text=texte,
+                command=lambda a=armure:
+                self.acheter_armure(a),
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=60,
+                height=2,
+                font=("Arial", 10)
+            ).pack(pady=3)
+
+        # ====================================================
+        # AMÉLIORATIONS
+        # ====================================================
+
+        tk.Label(
+            contenu,
+            text="AMÉLIORATIONS",
+            bg="black",
+            fg="white",
+            font=("Arial", 18, "bold")
+        ).pack(pady=15)
+
+        tk.Button(
+            contenu,
+            text="Améliorer l'arme équipée",
+            command=self.ameliorer_arme,
+            bg="#202020",
+            fg="white",
+            activebackground="#404040",
+            activeforeground="white",
+            width=30,
+            height=2
+        ).pack(pady=4)
+
+        tk.Button(
+            contenu,
+            text="Améliorer l'armure équipée",
+            command=self.ameliorer_armure,
+            bg="#202020",
+            fg="white",
+            activebackground="#404040",
+            activeforeground="white",
+            width=30,
+            height=2
+        ).pack(pady=4)
+
+        # ====================================================
+        # ESPACE EN BAS
+        # ====================================================
+
+        tk.Frame(
+            contenu,
+            bg="black",
+            height=100
+        ).pack()
+
+        # ====================================================
+        # BOUTON SECRET INVISIBLE
+        # EN BAS À GAUCHE
+        # ====================================================
+
+        bouton_secret = tk.Button(
+            fenetre,
+            text="",
+            command=lambda: self.decouvrir_epee_secrete(fenetre),
+            bg="black",
+            activebackground="black",
+            relief="flat",
+            bd=0,
+            highlightthickness=0,
+            width=5,
+            height=2
+        )
+
+        bouton_secret.place(
+            relx=0.0,
+            rely=1.0,
+            anchor="sw"
+        )
 
         # ====================================================
         # BOUTON QUITTER
@@ -1817,177 +2393,56 @@ class ShadowRPG:
             anchor="ne"
         )
 
-        # ====================================================
-        # PIECES
-        # ====================================================
+    # ========================================================
+    # APPRENDRE UN SORT
+    # ========================================================
 
-        tk.Label(
-            fenetre,
-            text=f"Pièces : {self.pieces}",
-            bg="black",
-            fg="white",
-            font=("Arial", 16)
-        ).pack(pady=5)
+    def apprendre_sort(self, sort_nom):
 
-        # ====================================================
-        # POTION
-        # ====================================================
+        info = self.sorts[sort_nom]
 
-        tk.Button(
-            fenetre,
-            text="Potion - 10 pièces",
-            command=self.acheter_potion,
-            bg="#202020",
-            fg="white",
-            activebackground="#404040",
-            activeforeground="white",
-            width=25,
-            height=1
-        ).pack(pady=5)
+        if sort_nom in self.sorts_appris:
 
-        # ====================================================
-        # ARMES
-        # ====================================================
-
-        tk.Label(
-            fenetre,
-            text="ARMES",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack(pady=8)
-
-        for arme, info in self.armes.items():
-
-            # L'épée secrète ne doit pas être visible
-            # avant sa découverte.
-
-            if arme == "Lame du Héro Absolu":
-
-                if not self.epee_secrete_decouverte:
-                    continue
-
-            if arme in self.inventaire_armes:
-                continue
-
-            texte = (
-                f"{arme} | "
-                f"+{info['attaque']} ATK | "
-                f"{info['prix']} pièces | "
-                f"Niv. {info['niveau_requis']}"
+            self.message(
+                f"Tu connais déjà le sort {sort_nom}."
             )
 
-            tk.Button(
-                fenetre,
-                text=texte,
-                command=lambda a=arme:
-                self.acheter_arme(a),
-                bg="#202020",
-                fg="white",
-                activebackground="#404040",
-                activeforeground="white",
-                width=55,
-                height=1,
-                font=("Arial", 9)
-            ).pack(pady=2)
+            return
 
-        # ====================================================
-        # ARMURES
-        # ====================================================
+        if self.niveau < info["niveau_requis"]:
 
-        tk.Label(
-            fenetre,
-            text="ARMURES",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack(pady=8)
-
-        for armure, info in self.armures.items():
-
-            if armure in self.inventaire_armures:
-                continue
-
-            texte = (
-                f"{armure} | "
-                f"+{info['defense']} DEF | "
-                f"+{info['pv']} PV | "
-                f"{info['prix']} pièces | "
-                f"Niv. {info['niveau_requis']}"
+            self.message(
+                f"Il faut être niveau "
+                f"{info['niveau_requis']}."
             )
 
-            tk.Button(
-                fenetre,
-                text=texte,
-                command=lambda a=armure:
-                self.acheter_armure(a),
-                bg="#202020",
-                fg="white",
-                activebackground="#404040",
-                activeforeground="white",
-                width=55,
-                height=1,
-                font=("Arial", 9)
-            ).pack(pady=2)
+            return
 
-        # ====================================================
-        # AMELIORATIONS
-        # ====================================================
+        if self.pieces < info["prix"]:
 
-        tk.Label(
-            fenetre,
-            text="AMÉLIORATIONS",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack(pady=8)
+            self.message(
+                "Tu n'as pas assez de pièces."
+            )
 
-        tk.Button(
-            fenetre,
-            text="Améliorer l'arme équipée",
-            command=self.ameliorer_arme,
-            bg="#202020",
-            fg="white",
-            activebackground="#404040",
-            activeforeground="white",
-            width=28,
-            height=1
-        ).pack(pady=3)
+            return
 
-        tk.Button(
-            fenetre,
-            text="Améliorer l'armure équipée",
-            command=self.ameliorer_armure,
-            bg="#202020",
-            fg="white",
-            activebackground="#404040",
-            activeforeground="white",
-            width=28,
-            height=1
-        ).pack(pady=3)
+        self.pieces -= info["prix"]
 
-        # ====================================================
-        # BOUTON SECRET INVISIBLE
-        # ====================================================
+        self.sorts_appris.append(sort_nom)
 
-        bouton_secret = tk.Button(
-            fenetre,
-            text="",
-            command=lambda: self.decouvrir_epee_secrete(fenetre),
-            bg="black",
-            activebackground="black",
-            relief="flat",
-            bd=0,
-            highlightthickness=0,
-            width=4,
-            height=2
+        self.afficher(
+            f"Tu as appris le sort : {sort_nom} !"
         )
 
-        bouton_secret.place(
-            relx=0.0,
-            rely=1.0,
-            anchor="sw"
+        self.message(
+            f"Sort appris : {sort_nom}\n\n"
+            f"Coût : {info['cout']} Mana\n"
+            f"Coefficient : x{info['coefficient']}\n\n"
+            f"Les dégâts sont calculés à partir "
+            f"de ton attaque à l'épée."
         )
+
+        self.actualiser()
 
     # ========================================================
     # DÉCOUVRIR L'ÉPÉE SECRÈTE
@@ -2006,19 +2461,16 @@ class ShadowRPG:
         self.epee_secrete_decouverte = True
 
         self.afficher(
-            "Une forge sous terraine est apparu !"
+            "Une forge souterraine est apparue !"
         )
 
         self.message(
             "Tu as découvert une arme secrète !\n\n"
             "Lame du Héro Absolu\n"
-            "+100 ATK\n"
+            "+200 ATK\n"
             "Prix : 5000 pièces\n"
             "Niveau requis : 25"
         )
-
-        # Ferme la boutique pour pouvoir la rouvrir
-        # avec l'épée désormais visible.
 
         fenetre.destroy()
 
@@ -2116,7 +2568,7 @@ class ShadowRPG:
         self.actualiser()
 
     # ========================================================
-    # AMELIORER ARME
+    # AMÉLIORER ARME
     # ========================================================
 
     def ameliorer_arme(self):
@@ -2154,7 +2606,7 @@ class ShadowRPG:
         self.actualiser()
 
     # ========================================================
-    # AMELIORER ARMURE
+    # AMÉLIORER ARMURE
     # ========================================================
 
     def ameliorer_armure(self):
@@ -2203,10 +2655,13 @@ class ShadowRPG:
             f"Niveau : {self.niveau}\n"
             f"XP : {self.xp}/{self.niveau * 50}\n\n"
             f"PV : {self.pv}/{self.get_pv_max()}\n"
+            f"Mana : {self.mana}/{self.get_mana_max()}\n"
             f"Attaque : {self.get_attaque()}\n"
             f"Défense : {self.get_defense()}\n\n"
             f"Arme : {self.arme_equipee}\n"
             f"Armure : {self.armure_equipee}\n\n"
+            f"Sorts appris : "
+            f"{len(self.sorts_appris)}/{len(self.sorts)}\n\n"
             f"Pièces : {self.pieces}\n"
             f"Potions : {self.potions}\n"
             f"Mobs vaincus : {self.mobs_vaincus}\n\n"
