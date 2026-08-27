@@ -5,6 +5,7 @@ import random
 
 # ============================================================
 # SHADOW RPG
+# Tkinter Version - English
 # ============================================================
 
 class ShadowRPG:
@@ -21,273 +22,285 @@ class ShadowRPG:
         self.button_bg = "#202020"
         self.button_active = "#404040"
 
-        self.nom = self.demander_nom()
+        self.root.bind("<Escape>", self.quit_game)
+
+        self.name = self.ask_name()
 
         # ====================================================
-        # JOUEUR
+        # PLAYER
         # ====================================================
 
-        self.pv_max = 100
-        self.pv = 100
+        self.max_hp = 100
+        self.hp = 100
 
-        self.mana_max = 100
+        self.max_mana = 100
         self.mana = 100
 
-        self.attaque_base = 20
-        self.defense_base = 5
+        self.base_attack = 20
+        self.base_defense = 5
 
-        self.niveau = 1
+        self.level = 1
         self.xp = 0
 
-        self.pieces = 50
+        self.coins = 50
         self.potions = 3
 
-        self.mobs_vaincus = 0
-
-        # Classe
-        self.classe = None
-        self.classes_achetees = []
-
-        # Épée secrète
-        self.epee_secrete_decouverte = False
+        self.mobs_defeated = 0
 
         # ====================================================
-        # EASTER EGGS
+        # SECRET SWORD
         # ====================================================
 
-        if self.nom == "snow":
-
-            self.pv_max = 150
-            self.pv = 150
-            self.attaque_base = 25
-            self.defense_base = 8
-
-        elif self.nom == "take":
-
-            self.attaque_base = 0
-
-        elif self.nom == "louis":
-
-            self.pv_max = 150
-            self.pv = 150
-            self.attaque_base = 25
-            self.defense_base = 8
-
-        elif self.nom == "sans":
-
-            self.attaque_base = 22
-
-        elif self.nom == "modo":
-
-            self.niveau = 9999
-            self.pieces = 9999
-            self.mobs_vaincus = 9999
-            self.attaque_base = 9999
-            self.defense_base = 9999
-            self.mana_max = 9999
-            self.mana = 9999
-
-        # ====================================================
-        # ARMES
-        # ====================================================
-
-        self.armes = {
-
-            "Épée en bois": {
-                "attaque": 0,
-                "prix": 0,
-                "niveau_requis": 1,
-                "niveau": 1
-            },
-
-            "Épée en fer": {
-                "attaque": 10,
-                "prix": 100,
-                "niveau_requis": 2,
-                "niveau": 1
-            },
-
-            "Lance en fer": {
-                "attaque": 20,
-                "prix": 250,
-                "niveau_requis": 4,
-                "niveau": 1
-            },
-
-            "Dague de la foudre": {
-                "attaque": 35,
-                "prix": 500,
-                "niveau_requis": 7,
-                "niveau": 1
-            },
-
-            "Faux des ténèbres": {
-                "attaque": 50,
-                "prix": 1000,
-                "niveau_requis": 10,
-                "niveau": 1
-            },
-
-            "Lame du Chevalier Déchu": {
-                "attaque": 70,
-                "prix": 3000,
-                "niveau_requis": 20,
-                "niveau": 1
-            },
-
-            "Lame du Héro Absolu": {
-                "attaque": 200,
-                "prix": 5000,
-                "niveau_requis": 25,
-                "niveau": 1
-            }
-        }
-
-        self.inventaire_armes = ["Épée en bois"]
-        self.arme_equipee = "Épée en bois"
-
-        # ====================================================
-        # ARMURES
-        # ====================================================
-
-        self.armures = {
-
-            "Vêtements simples": {
-                "defense": 0,
-                "pv": 0,
-                "prix": 0,
-                "niveau_requis": 1,
-                "niveau": 1
-            },
-
-            "Armure de fer": {
-                "defense": 8,
-                "pv": 30,
-                "prix": 200,
-                "niveau_requis": 3,
-                "niveau": 1
-            },
-
-            "Armure du chevalier": {
-                "defense": 15,
-                "pv": 70,
-                "prix": 500,
-                "niveau_requis": 6,
-                "niveau": 1
-            },
-
-            "Armure des ombres": {
-                "defense": 25,
-                "pv": 120,
-                "prix": 1000,
-                "niveau_requis": 10,
-                "niveau": 1
-            },
-
-            "Armure du roi déchu": {
-                "defense": 40,
-                "pv": 200,
-                "prix": 2000,
-                "niveau_requis": 15,
-                "niveau": 1
-            }
-        }
-
-        self.inventaire_armures = ["Vêtements simples"]
-        self.armure_equipee = "Vêtements simples"
-
-        # ====================================================
-        # SORTS
-        # ====================================================
-
-        # Les dégâts des sorts sont proportionnels aux dégâts
-        # que le joueur ferait avec son attaque à l'épée.
-
-        self.sorts = {
-
-            "Boule de feu": {
-                "prix": 300,
-                "niveau_requis": 3,
-                "mana": 20,
-                "multiplicateur": 1.50
-            },
-
-            "Éclair": {
-                "prix": 700,
-                "niveau_requis": 7,
-                "mana": 30,
-                "multiplicateur": 2.00
-            },
-
-            "Drain d'âme": {
-                "prix": 1200,
-                "niveau_requis": 10,
-                "mana": 35,
-                "multiplicateur": 1.25
-            },
-
-            "Explosion abyssale": {
-                "prix": 2500,
-                "niveau_requis": 20,
-                "mana": 50,
-                "multiplicateur": 3.00
-            }
-        }
-
-        self.sorts_appris = []
+        self.secret_sword_discovered = False
 
         # ====================================================
         # CLASSES
         # ====================================================
 
+        self.current_class = "Adventurer"
+
         self.classes = {
 
-            "Guerrier": {
-                "prix": 500,
-                "niveau_requis": 3,
-                "attaque": 20,
-                "defense": 5,
-                "pv": 50,
-                "mana": 0,
-                "esquive": 0,
-                "reduction_mana": 0
+            "Adventurer": {
+                "price": 0,
+                "attack": 0,
+                "defense": 0,
+                "hp": 0,
+                "mana": 0
+            },
+
+            "Warrior": {
+                "price": 1000,
+                "attack": 15,
+                "defense": 10,
+                "hp": 50,
+                "mana": 0
             },
 
             "Mage": {
-                "prix": 700,
-                "niveau_requis": 5,
-                "attaque": 5,
-                "defense": 0,
-                "pv": 0,
-                "mana": 100,
-                "esquive": 0,
-                "reduction_mana": 20
+                "price": 1200,
+                "attack": 5,
+                "defense": 2,
+                "hp": 0,
+                "mana": 100
             },
 
-            "Assassin": {
-                "prix": 900,
-                "niveau_requis": 7,
-                "attaque": 15,
-                "defense": 0,
-                "pv": 0,
-                "mana": 20,
-                "esquive": 10,
-                "reduction_mana": 0
-            },
-
-            "Paladin": {
-                "prix": 1200,
-                "niveau_requis": 10,
-                "attaque": 10,
+            "Knight": {
+                "price": 2000,
+                "attack": 20,
                 "defense": 20,
-                "pv": 100,
-                "mana": 20,
-                "esquive": 0,
-                "reduction_mana": 0
+                "hp": 100,
+                "mana": 0
+            },
+
+            "Shadow Lord": {
+                "price": 5000,
+                "attack": 35,
+                "defense": 15,
+                "hp": 50,
+                "mana": 100
             }
         }
 
-        self.classes_achetees = []
+        self.owned_classes = ["Adventurer"]
+
+        # ====================================================
+        # EASTER EGGS
+        # ====================================================
+
+        if self.name == "snow":
+
+            self.max_hp = 150
+            self.hp = 150
+            self.base_attack = 25
+            self.base_defense = 8
+
+        elif self.name == "take":
+
+            self.base_attack = 0
+
+        elif self.name == "louis":
+
+            self.max_hp = 150
+            self.hp = 150
+            self.base_attack = 25
+            self.base_defense = 8
+
+        elif self.name == "sans":
+
+            self.base_attack = 22
+
+        elif self.name == "modo":
+
+            self.level = 9999
+            self.coins = 9999
+            self.mobs_defeated = 9999
+            self.base_attack = 9999
+            self.base_defense = 9999
+            self.max_mana = 9999
+            self.mana = 9999
+
+        elif self.name == "admin":
+
+            self.level = 9999
+            self.coins = 999999
+            self.mobs_defeated = 9999
+            self.base_attack = 9999
+            self.base_defense = 9999
+            self.max_mana = 9999
+            self.mana = 9999
+            self.max_hp = 999999
+            self.hp = 999999
+
+        elif self.name == "money":
+
+            self.coins = 999999
+
+        # ====================================================
+        # WEAPONS
+        # ====================================================
+
+        self.weapons = {
+
+            "Wooden Sword": {
+                "attack": 0,
+                "price": 0,
+                "required_level": 1,
+                "level": 1
+            },
+
+            "Iron Sword": {
+                "attack": 10,
+                "price": 100,
+                "required_level": 2,
+                "level": 1
+            },
+
+            "Iron Spear": {
+                "attack": 20,
+                "price": 250,
+                "required_level": 4,
+                "level": 1
+            },
+
+            "Lightning Dagger": {
+                "attack": 35,
+                "price": 500,
+                "required_level": 7,
+                "level": 1
+            },
+
+            "Dark Scythe": {
+                "attack": 50,
+                "price": 1000,
+                "required_level": 10,
+                "level": 1
+            },
+
+            "Fallen Knight Blade": {
+                "attack": 70,
+                "price": 3000,
+                "required_level": 20,
+                "level": 1
+            },
+
+            "Absolute Hero Blade": {
+                "attack": 200,
+                "price": 5000,
+                "required_level": 25,
+                "level": 1
+            }
+        }
+
+        self.weapon_inventory = ["Wooden Sword"]
+        self.equipped_weapon = "Wooden Sword"
+
+        # ====================================================
+        # ARMOR
+        # ====================================================
+
+        self.armors = {
+
+            "Simple Clothes": {
+                "defense": 0,
+                "hp": 0,
+                "price": 0,
+                "required_level": 1,
+                "level": 1
+            },
+
+            "Iron Armor": {
+                "defense": 8,
+                "hp": 30,
+                "price": 200,
+                "required_level": 3,
+                "level": 1
+            },
+
+            "Knight Armor": {
+                "defense": 15,
+                "hp": 70,
+                "price": 500,
+                "required_level": 6,
+                "level": 1
+            },
+
+            "Shadow Armor": {
+                "defense": 25,
+                "hp": 120,
+                "price": 1000,
+                "required_level": 10,
+                "level": 1
+            },
+
+            "Fallen King's Armor": {
+                "defense": 40,
+                "hp": 200,
+                "price": 2000,
+                "required_level": 15,
+                "level": 1
+            }
+        }
+
+        self.armor_inventory = ["Simple Clothes"]
+        self.equipped_armor = "Simple Clothes"
+
+        # ====================================================
+        # SPELLS
+        # ====================================================
+
+        self.spells = {
+
+            "Fireball": {
+                "price": 400,
+                "mana": 10,
+                "multiplier": 1.20,
+                "required_level": 3
+            },
+
+            "Lightning": {
+                "price": 800,
+                "mana": 15,
+                "multiplier": 1.50,
+                "required_level": 5
+            },
+
+            "Ice Nova": {
+                "price": 1500,
+                "mana": 20,
+                "multiplier": 2.00,
+                "required_level": 10
+            },
+
+            "Soul Drain": {
+                "price": 2500,
+                "mana": 30,
+                "multiplier": 1.30,
+                "required_level": 15
+            }
+        }
+
+        self.learned_spells = []
 
         # ====================================================
         # ZONES
@@ -295,178 +308,184 @@ class ShadowRPG:
 
         self.zones = {
 
-            "Plaine": {
-                "niveau": 1,
-                "boss": "Boss de la Plaine",
-                "boss_vaincu": False,
-                "mobs_requis": 0,
+            "Plains": {
+                "level": 1,
+                "boss": "Plains Boss",
+                "boss_defeated": False,
+                "required_mobs": 0,
 
-                "monstres": [
+                "monsters": [
                     ["Slime", 45, 10, 2, 15, 10],
-                    ["Gobelin", 50, 12, 3, 20, 15],
-                    ["Loup", 60, 14, 4, 25, 20]
+                    ["Goblin", 50, 12, 3, 20, 15],
+                    ["Wolf", 60, 14, 4, 25, 20]
                 ],
 
                 "boss_stats": [250, 25, 8, 100, 100]
             },
 
-            "Forêt": {
-                "niveau": 3,
-                "boss": "Boss de la Forêt",
-                "boss_vaincu": False,
-                "mobs_requis": 10,
+            "Forest": {
+                "level": 3,
+                "boss": "Forest Boss",
+                "boss_defeated": False,
+                "required_mobs": 10,
 
-                "monstres": [
-                    ["Loup géant", 90, 20, 7, 35, 30],
+                "monsters": [
+                    ["Giant Wolf", 90, 20, 7, 35, 30],
                     ["Ent", 120, 18, 10, 45, 40],
-                    ["Gobelin noir", 100, 23, 8, 50, 45]
+                    ["Black Goblin", 100, 23, 8, 50, 45]
                 ],
 
                 "boss_stats": [400, 35, 12, 150, 150]
             },
 
-            "Montagne": {
-                "niveau": 6,
-                "boss": "Boss de la Montagne",
-                "boss_vaincu": False,
-                "mobs_requis": 20,
+            "Mountain": {
+                "level": 6,
+                "boss": "Mountain Boss",
+                "boss_defeated": False,
+                "required_mobs": 20,
 
-                "monstres": [
+                "monsters": [
                     ["Golem", 180, 30, 15, 70, 60],
-                    ["Dragonnet", 160, 35, 12, 80, 70],
+                    ["Dragon Whelp", 160, 35, 12, 80, 70],
                     ["Ogre", 220, 32, 18, 90, 80]
                 ],
 
                 "boss_stats": [650, 45, 20, 250, 250]
             },
 
-            "Royaume des Ombres": {
-                "niveau": 10,
-                "boss": "Roi des Ombres",
-                "boss_vaincu": False,
-                "mobs_requis": 35,
+            "Shadow Realm": {
+                "level": 10,
+                "boss": "Shadow King",
+                "boss_defeated": False,
+                "required_mobs": 35,
 
-                "monstres": [
-                    ["Ombre", 250, 45, 20, 120, 100],
-                    ["Démon", 300, 50, 25, 150, 130],
-                    ["Chevalier noir", 350, 55, 30, 180, 160]
+                "monsters": [
+                    ["Shadow", 250, 45, 20, 120, 100],
+                    ["Demon", 300, 50, 25, 150, 130],
+                    ["Dark Knight", 350, 55, 30, 180, 160]
                 ],
 
                 "boss_stats": [1000, 65, 35, 400, 400]
             },
 
-            "Capitale déchue": {
-                "niveau": 15,
-                "boss": "Roi déchu",
-                "boss_vaincu": False,
-                "mobs_requis": 50,
+            "Fallen Capital": {
+                "level": 15,
+                "boss": "Fallen King",
+                "boss_defeated": False,
+                "required_mobs": 50,
 
-                "monstres": [
-                    ["Garde déchu", 800, 65, 30, 220, 180],
-                    ["Chevalier maudit", 1000, 75, 35, 260, 220],
-                    ["Seigneur déchu", 1200, 85, 40, 300, 250]
+                "monsters": [
+                    ["Fallen Guard", 800, 65, 30, 220, 180],
+                    ["Cursed Knight", 1000, 75, 35, 260, 220],
+                    ["Fallen Lord", 1200, 85, 40, 300, 250]
                 ],
 
                 "boss_stats": [2000, 95, 50, 700, 600]
             },
 
-            "Citadelle déchue": {
-                "niveau": 20,
-                "boss": "Chevalier Déchu",
-                "boss_vaincu": False,
-                "mobs_requis": 75,
+            "Fallen Citadel": {
+                "level": 20,
+                "boss": "Fallen Knight",
+                "boss_defeated": False,
+                "required_mobs": 75,
 
-                "monstres": [
-                    ["Soldat déchu", 1400, 90, 45, 350, 300],
-                    ["Chevalier corrompu", 1700, 105, 55, 400, 350],
-                    ["Gardien de la Citadelle", 2000, 120, 65, 450, 400]
+                "monsters": [
+                    ["Fallen Soldier", 1400, 90, 45, 350, 300],
+                    ["Corrupted Knight", 1700, 105, 55, 400, 350],
+                    ["Citadel Guardian", 2000, 120, 65, 450, 400]
                 ],
 
                 "boss_stats": [3500, 130, 70, 1000, 900]
             },
 
-            "Abysses": {
-                "niveau": 25,
-                "boss": "Seigneur des Abysses",
-                "boss_vaincu": False,
-                "mobs_requis": 100,
+            "Abyss": {
+                "level": 25,
+                "boss": "Lord of the Abyss",
+                "boss_defeated": False,
+                "required_mobs": 100,
 
-                "monstres": [
-                    ["Démon des Abysses", 2500, 140, 75, 600, 500],
-                    ["Créature abyssale", 3000, 155, 85, 700, 600],
-                    ["Chevalier abyssal", 3500, 170, 100, 800, 700]
+                "monsters": [
+                    ["Abyss Demon", 2500, 140, 75, 600, 500],
+                    ["Abyssal Creature", 3000, 155, 85, 700, 600],
+                    ["Abyssal Knight", 3500, 170, 100, 800, 700]
                 ],
 
                 "boss_stats": [6000, 190, 120, 1500, 1200]
             },
 
             "???": {
-                "niveau": 1,
+                "level": 1,
                 "boss": "Shadow",
-                "boss_vaincu": False,
-                "mobs_requis": 100,
+                "boss_defeated": False,
+                "required_mobs": 100,
 
-                "monstres": [
-                    ["Créature ???", 1000, 70, 40, 250, 250],
-                    ["Ombre ???", 1200, 80, 90, 300, 300],
-                    ["Âme ???", 1500, 90, 110, 350, 350]
+                "monsters": [
+                    ["??? Creature", 1000, 70, 40, 250, 250],
+                    ["??? Shadow", 1200, 80, 90, 300, 300],
+                    ["??? Soul", 1500, 90, 110, 350, 350]
                 ],
 
                 "boss_stats": [10000, 100, 50, 1000, 1000]
             }
         }
 
-        self.zone_actuelle = "Plaine"
+        self.current_zone = "Plains"
 
-        self.creer_interface()
-        self.actualiser()
+        # ====================================================
+        # INTERFACE
+        # ====================================================
+
+        self.create_interface()
+        self.update_interface()
 
     # ========================================================
-    # NOM
+    # NAME
     # ========================================================
 
-    def demander_nom(self):
+    def ask_name(self):
 
-        fenetre = tk.Toplevel(self.root)
-        fenetre.title("SHADOW RPG")
-        fenetre.configure(bg="black")
-        fenetre.geometry("500x250")
+        window = tk.Toplevel(self.root)
 
-        fenetre.transient(self.root)
-        fenetre.grab_set()
+        window.title("SHADOW RPG")
+        window.configure(bg="black")
+        window.geometry("500x250")
 
-        resultat = {"nom": "Aventurier"}
+        window.transient(self.root)
+        window.grab_set()
+
+        result = {"name": "Adventurer"}
 
         tk.Label(
-            fenetre,
-            text="Comment t'appelles-tu ?",
+            window,
+            text="What is your name?",
             bg="black",
             fg="white",
             font=("Arial", 18, "bold")
         ).pack(pady=30)
 
-        entree = tk.Entry(
-            fenetre,
+        entry = tk.Entry(
+            window,
             bg="#202020",
             fg="white",
             insertbackground="white",
             font=("Arial", 16)
         )
-        entree.pack()
 
-        def valider():
+        entry.pack()
 
-            nom = entree.get().strip()
+        def validate():
 
-            if nom:
-                resultat["nom"] = nom.lower()
+            name = entry.get().strip()
 
-            fenetre.destroy()
+            if name:
+                result["name"] = name.lower()
+
+            window.destroy()
 
         tk.Button(
-            fenetre,
-            text="Commencer",
-            command=valider,
+            window,
+            text="Start",
+            command=validate,
             bg="#202020",
             fg="white",
             activebackground="#404040",
@@ -475,40 +494,45 @@ class ShadowRPG:
             height=2
         ).pack(pady=25)
 
-        self.root.wait_window(fenetre)
+        self.root.wait_window(window)
 
-        return resultat["nom"]
+        return result["name"]
 
     # ========================================================
-    # QUITTER
+    # QUIT
     # ========================================================
 
-    def quitter_jeu(self, event=None):
+    def quit_game(self, event=None):
 
-        if messagebox.askyesno(
-            "Quitter SHADOW RPG",
-            "Veux-tu vraiment quitter le jeu ?",
+        if not self.root.winfo_exists():
+            return
+
+        answer = messagebox.askyesno(
+            "Quit SHADOW RPG",
+            "Do you really want to quit the game?",
             parent=self.root
-        ):
+        )
+
+        if answer:
             self.root.destroy()
 
     # ========================================================
     # MESSAGE
     # ========================================================
 
-    def message(self, texte):
+    def show_message(self, text):
 
         messagebox.showinfo(
             "SHADOW RPG",
-            texte,
+            text,
             parent=self.root
         )
 
     # ========================================================
-    # INTERFACE
+    # MAIN INTERFACE
     # ========================================================
 
-    def creer_interface(self):
+    def create_interface(self):
 
         tk.Label(
             self.root,
@@ -526,6 +550,7 @@ class ShadowRPG:
             font=("Arial", 14),
             justify="left"
         )
+
         self.stats.pack()
 
         self.zone_label = tk.Label(
@@ -535,6 +560,7 @@ class ShadowRPG:
             fg="white",
             font=("Arial", 22, "bold")
         )
+
         self.zone_label.pack(pady=10)
 
         self.log = tk.Text(
@@ -549,18 +575,23 @@ class ShadowRPG:
             relief="solid",
             bd=1
         )
+
         self.log.pack(pady=10)
         self.log.config(state="disabled")
 
-        frame = tk.Frame(self.root, bg="black")
+        frame = tk.Frame(
+            self.root,
+            bg="black"
+        )
+
         frame.pack(pady=5)
 
-        def bouton(texte, commande, ligne, colonne):
+        def button(text, command, row, column):
 
             tk.Button(
                 frame,
-                text=texte,
-                command=commande,
+                text=text,
+                command=command,
                 bg="#202020",
                 fg="white",
                 activebackground="#404040",
@@ -569,350 +600,231 @@ class ShadowRPG:
                 height=2,
                 font=("Arial", 11, "bold")
             ).grid(
-                row=ligne,
-                column=colonne,
+                row=row,
+                column=column,
                 padx=5,
                 pady=5
             )
 
-        bouton("Explorer", self.explorer, 0, 0)
-        bouton("Zones", self.menu_zones, 0, 1)
-        bouton("Boss", self.menu_boss, 0, 2)
-        bouton("Boutique", self.boutique, 0, 3)
+        button("Explore", self.explore, 0, 0)
+        button("Zones", self.zone_menu, 0, 1)
+        button("Bosses", self.boss_menu, 0, 2)
+        button("Shop", self.shop, 0, 3)
 
-        bouton("Inventaire", self.inventaire, 1, 0)
-        bouton("Potion", self.utiliser_potion, 1, 1)
-        bouton("Statistiques", self.afficher_stats, 1, 2)
-        bouton("Classe", self.menu_classes, 1, 3)
+        button("Inventory", self.inventory, 1, 0)
+        button("Potion", self.use_potion, 1, 1)
+        button("Statistics", self.show_stats, 1, 2)
+        button("Classes", self.class_menu, 1, 3)
 
-        bouton("???", self.zone_secret, 2, 0)
+        button("???", self.secret_zone, 2, 1)
 
     # ========================================================
     # LOG
     # ========================================================
 
-    def afficher(self, texte):
+    def display(self, text):
 
         self.log.config(state="normal")
-        self.log.insert("end", texte + "\n")
+        self.log.insert("end", text + "\n")
         self.log.see("end")
         self.log.config(state="disabled")
 
     # ========================================================
-    # BONUS CLASSE
+    # STATS
     # ========================================================
 
-    def bonus_classe(self, stat):
+    def get_attack(self):
 
-        if self.classe is None:
-            return 0
-
-        return self.classes[self.classe].get(stat, 0)
-
-    def get_attaque(self):
-
-        arme = self.armes[self.arme_equipee]
+        weapon = self.weapons[self.equipped_weapon]
+        player_class = self.classes[self.current_class]
 
         return (
-            self.attaque_base
-            + arme["attaque"]
-            + (arme["niveau"] - 1) * 5
-            + self.bonus_classe("attaque")
+            self.base_attack
+            + player_class["attack"]
+            + weapon["attack"]
+            + (weapon["level"] - 1) * 5
         )
 
     def get_defense(self):
 
-        armure = self.armures[self.armure_equipee]
+        armor = self.armors[self.equipped_armor]
+        player_class = self.classes[self.current_class]
 
         return (
-            self.defense_base
-            + armure["defense"]
-            + (armure["niveau"] - 1) * 3
-            + self.bonus_classe("defense")
+            self.base_defense
+            + player_class["defense"]
+            + armor["defense"]
+            + (armor["level"] - 1) * 3
         )
 
-    def get_pv_max(self):
+    def get_max_hp(self):
 
-        armure = self.armures[self.armure_equipee]
+        armor = self.armors[self.equipped_armor]
+        player_class = self.classes[self.current_class]
 
         return (
-            self.pv_max
-            + armure["pv"]
-            + (armure["niveau"] - 1) * 10
-            + self.bonus_classe("pv")
+            self.max_hp
+            + player_class["hp"]
+            + armor["hp"]
+            + (armor["level"] - 1) * 10
         )
 
-    def get_mana_max(self):
+    def get_max_mana(self):
 
-        return self.mana_max + self.bonus_classe("mana")
+        player_class = self.classes[self.current_class]
 
-    def cout_mana(self, sort):
-
-        cout = self.sorts[sort]["mana"]
-
-        reduction = self.bonus_classe("reduction_mana")
-
-        return max(1, int(cout * (100 - reduction) / 100))
+        return (
+            self.max_mana
+            + player_class["mana"]
+            + (self.level - 1) * 5
+        )
 
     # ========================================================
-    # ACTUALISER
+    # UPDATE
     # ========================================================
 
-    def actualiser(self):
+    def update_interface(self):
 
-        pv_max = self.get_pv_max()
-        mana_max = self.get_mana_max()
+        max_hp = self.get_max_hp()
+        max_mana = self.get_max_mana()
 
-        if self.pv != float("inf"):
-            self.pv = min(self.pv, pv_max)
-
-        self.mana = min(self.mana, mana_max)
-
-        classe = self.classe if self.classe else "Aucune"
+        self.hp = min(self.hp, max_hp)
+        self.mana = min(self.mana, max_mana)
 
         self.stats.config(
             text=(
-                f"Nom : {self.nom}    "
-                f"Niveau : {self.niveau}    "
-                f"XP : {self.xp}/{self.niveau * 50}\n"
-                f"PV : {self.pv}/{pv_max}    "
-                f"Mana : {self.mana}/{mana_max}    "
-                f"Attaque : {self.get_attaque()}    "
-                f"Défense : {self.get_defense()}    "
-                f"Pièces : {self.pieces}    "
-                f"Potions : {self.potions}\n"
-                f"Arme : {self.arme_equipee}    "
-                f"Armure : {self.armure_equipee}    "
-                f"Classe : {classe}    "
-                f"Mobs vaincus : {self.mobs_vaincus}"
+                f"Name: {self.name}    "
+                f"Class: {self.current_class}    "
+                f"Level: {self.level}    "
+                f"XP: {self.xp}/{self.level * 50}\n"
+
+                f"HP: {self.hp}/{max_hp}    "
+                f"Mana: {self.mana}/{max_mana}    "
+                f"Attack: {self.get_attack()}    "
+                f"Defense: {self.get_defense()}    "
+                f"Coins: {self.coins}    "
+                f"Potions: {self.potions}\n"
+
+                f"Weapon: {self.equipped_weapon}    "
+                f"Armor: {self.equipped_armor}    "
+                f"Mobs defeated: {self.mobs_defeated}"
             )
         )
 
         self.zone_label.config(
-            text=f"Zone : {self.zone_actuelle}"
+            text=f"Zone: {self.current_zone}"
         )
 
     # ========================================================
-    # ESQUIVE
+    # DODGE
     # ========================================================
 
-    def joueur_esquive(self):
+    def player_dodges(self):
 
-        chance = 0
+        if self.name == "fizz":
 
-        if self.nom == "fizz":
-            chance = 15
+            if random.randint(1, 100) <= 15:
 
-        elif self.nom == "louis":
-            chance = 25
+                self.display(
+                    "Fizz dodges the attack!"
+                )
 
-        chance += self.bonus_classe("esquive")
+                return True
 
-        if chance > 0 and random.randint(1, 100) <= chance:
+        elif self.name == "louis":
 
-            self.afficher("Tu esquives l'attaque !")
+            if random.randint(1, 100) <= 25:
+
+                self.display(
+                    "Louis dodges the attack!"
+                )
+
+                return True
+
+        elif self.name == "admin":
+
+            self.display(
+                "Admin dodges with a cheat!"
+            )
+
             return True
 
         return False
 
     # ========================================================
-    # EXPLORER
+    # EXPLORE
     # ========================================================
 
-    def explorer(self):
+    def explore(self):
 
-        if self.zone_actuelle == "???":
-            self.combat_shadow()
+        if self.current_zone == "???":
+
+            self.shadow_combat()
             return
 
         chance = random.randint(1, 100)
 
         if chance <= 70:
+
             self.combat()
 
         elif chance <= 82:
 
             gain = random.randint(10, 40)
-            self.pieces += gain
 
-            self.afficher(
-                f"Tu trouves {gain} pièces !"
+            self.coins += gain
+
+            self.display(
+                f"You find {gain} coins!"
             )
 
         elif chance <= 94:
 
-            soin = random.randint(10, 30)
+            healing = random.randint(10, 30)
 
-            if self.pv != float("inf"):
-                self.pv = min(
-                    self.get_pv_max(),
-                    self.pv + soin
-                )
+            self.hp = min(
+                self.get_max_hp(),
+                self.hp + healing
+            )
 
-            self.afficher(
-                f"Tu récupères {soin} PV."
+            self.display(
+                f"You recover {healing} HP."
             )
 
         else:
-            self.afficher(
-                "Un mystérieux voyageur apparaît..."
+
+            self.display(
+                "A mysterious traveler appears..."
             )
 
-        self.actualiser()
+        self.update_interface()
 
     # ========================================================
-    # COMBAT NORMAL
+    # NORMAL COMBAT
     # ========================================================
 
     def combat(self):
 
-        zone = self.zones[self.zone_actuelle]
-        monstre = random.choice(zone["monstres"])
+        zone = self.zones[self.current_zone]
+
+        monster = random.choice(
+            zone["monsters"]
+        )
 
         self.combat_interface(
-            monstre[0],
-            monstre[1],
-            monstre[2],
-            monstre[3],
-            monstre[4],
-            monstre[5]
+            monster[0],
+            monster[1],
+            monster[2],
+            monster[3],
+            monster[4],
+            monster[5]
         )
 
     # ========================================================
-    # MENU BOSS
+    # SHADOW COMBAT
     # ========================================================
 
-    def menu_boss(self):
-
-        fenetre = tk.Toplevel(self.root)
-        fenetre.title("Boss")
-        fenetre.configure(bg="black")
-        fenetre.attributes("-fullscreen", True)
-
-        tk.Label(
-            fenetre,
-            text="BOSS DISPONIBLES",
-            bg="black",
-            fg="white",
-            font=("Arial", 28, "bold")
-        ).pack(pady=30)
-
-        ordre = [
-            "Plaine",
-            "Forêt",
-            "Montagne",
-            "Royaume des Ombres",
-            "Capitale déchue",
-            "Citadelle déchue",
-            "Abysses"
-        ]
-
-        for zone_nom in ordre:
-
-            zone = self.zones[zone_nom]
-
-            if zone["boss_vaincu"]:
-                texte = f"{zone['boss']} - VAINCU"
-            else:
-                texte = (
-                    f"{zone['boss']} "
-                    f"(Niv. {zone['niveau']})"
-                )
-
-            tk.Button(
-                fenetre,
-                text=texte,
-                command=lambda z=zone_nom:
-                self.lancer_boss(z, fenetre),
-                bg="#202020",
-                fg="white",
-                activebackground="#404040",
-                activeforeground="white",
-                width=35,
-                height=2
-            ).pack(pady=7)
-
-        tk.Button(
-            fenetre,
-            text="Retour",
-            command=fenetre.destroy,
-            bg="#202020",
-            fg="white",
-            activebackground="#404040",
-            activeforeground="white",
-            width=20,
-            height=2
-        ).pack(pady=30)
-
-    # ========================================================
-    # LANCER BOSS
-    # ========================================================
-
-    def lancer_boss(self, zone_nom, fenetre):
-
-        zone = self.zones[zone_nom]
-
-        if zone["boss_vaincu"]:
-            self.message("Tu as déjà vaincu ce boss.")
-            return
-
-        if self.niveau < zone["niveau"]:
-            self.message(
-                f"Tu dois être niveau {zone['niveau']}."
-            )
-            return
-
-        if self.mobs_vaincus < zone["mobs_requis"]:
-            self.message(
-                f"Tu dois avoir vaincu "
-                f"{zone['mobs_requis']} mobs."
-            )
-            return
-
-        ordre = [
-            "Plaine",
-            "Forêt",
-            "Montagne",
-            "Royaume des Ombres",
-            "Capitale déchue",
-            "Citadelle déchue",
-            "Abysses"
-        ]
-
-        index = ordre.index(zone_nom)
-
-        if index > 0:
-
-            precedente = ordre[index - 1]
-
-            if not self.zones[precedente]["boss_vaincu"]:
-
-                self.message(
-                    f"Tu dois d'abord vaincre "
-                    f"le boss de {precedente}."
-                )
-                return
-
-        fenetre.destroy()
-
-        stats = zone["boss_stats"]
-
-        self.combat_interface(
-            zone["boss"],
-            stats[0],
-            stats[1],
-            stats[2],
-            stats[3],
-            stats[4],
-            boss=True,
-            zone_boss=zone_nom
-        )
-
-    # ========================================================
-    # SHADOW
-    # ========================================================
-
-    def combat_shadow(self):
+    def shadow_combat(self):
 
         stats = self.zones["???"]["boss_stats"]
 
@@ -924,7 +836,7 @@ class ShadowRPG:
             stats[3],
             stats[4],
             boss=True,
-            zone_boss="???"
+            boss_zone="???"
         )
 
     # ========================================================
@@ -933,35 +845,47 @@ class ShadowRPG:
 
     def combat_interface(
         self,
-        nom_ennemi,
-        pv_ennemi,
-        attaque_ennemi,
-        defense_ennemi,
+        enemy_name,
+        enemy_hp,
+        enemy_attack,
+        enemy_defense,
         xp_gain,
-        pieces_gain,
+        coins_gain,
         boss=False,
-        zone_boss=None
+        boss_zone=None
     ):
 
-        fenetre = tk.Toplevel(self.root)
-        fenetre.title(f"Combat - {nom_ennemi}")
-        fenetre.configure(bg="black")
-        fenetre.attributes("-fullscreen", True)
-        fenetre.grab_set()
+        window = tk.Toplevel(self.root)
+
+        window.title(
+            f"Combat - {enemy_name}"
+        )
+
+        window.configure(
+            bg="black"
+        )
+
+        window.attributes(
+            "-fullscreen",
+            True
+        )
+
+        window.grab_set()
 
         label = tk.Label(
-            fenetre,
+            window,
             text="",
             bg="black",
             fg="white",
             font=("Arial", 22, "bold")
         )
-        label.pack(pady=25)
+
+        label.pack(pady=20)
 
         message = tk.Text(
-            fenetre,
+            window,
             width=100,
-            height=18,
+            height=16,
             bg="black",
             fg="white",
             insertbackground="white",
@@ -969,346 +893,492 @@ class ShadowRPG:
             relief="solid",
             bd=1
         )
+
         message.pack(pady=10)
         message.config(state="disabled")
 
         defense_bonus = [0]
-        combat_termine = [False]
+        combat_finished = [False]
+        enemy_frozen = [False]
 
-        def log(texte):
+        def combat_log(text):
 
             message.config(state="normal")
-            message.insert("end", texte + "\n")
+            message.insert("end", text + "\n")
             message.see("end")
             message.config(state="disabled")
 
-        def actualiser_combat():
+        def update_combat():
 
             label.config(
                 text=(
-                    f"{self.nom} : "
-                    f"{self.pv}/{self.get_pv_max()} PV    "
-                    f"{self.mana}/{self.get_mana_max()} Mana\n\n"
-                    f"{nom_ennemi} : "
-                    f"{max(0, pv_ennemi)} PV"
+                    f"{self.name}: "
+                    f"{self.hp}/{self.get_max_hp()} HP    "
+                    f"{self.mana}/{self.get_max_mana()} Mana\n\n"
+
+                    f"{enemy_name}: "
+                    f"{max(0, enemy_hp)} HP"
                 )
             )
 
-        def fermer_combat():
+        def close():
 
-            if fenetre.winfo_exists():
+            if window.winfo_exists():
 
                 try:
-                    fenetre.grab_release()
+                    window.grab_release()
                 except:
                     pass
 
-                fenetre.destroy()
+                window.destroy()
 
-            self.actualiser()
+            self.update_interface()
 
         # ====================================================
-        # VICTOIRE
+        # VICTORY
         # ====================================================
 
-        def victoire():
+        def victory():
 
-            if combat_termine[0]:
+            if combat_finished[0]:
                 return
 
-            combat_termine[0] = True
+            combat_finished[0] = True
 
-            self.mobs_vaincus += 1
+            self.mobs_defeated += 1
+
             self.xp += xp_gain
-            self.pieces += pieces_gain
+            self.coins += coins_gain
 
-            log("")
-            log("VICTOIRE !")
-            log(f"+{xp_gain} XP")
-            log(f"+{pieces_gain} pièces")
+            combat_log("")
+            combat_log("VICTORY!")
+            combat_log(f"+{xp_gain} XP")
+            combat_log(f"+{coins_gain} coins")
 
-            if boss and zone_boss:
+            if boss and boss_zone:
 
-                self.zones[zone_boss]["boss_vaincu"] = True
+                self.zones[
+                    boss_zone
+                ]["boss_defeated"] = True
 
-                log("")
-                log(
-                    f"Boss vaincu : {nom_ennemi}"
+                combat_log(
+                    f"Boss defeated: {enemy_name}"
                 )
 
-                if zone_boss == "???":
-                    log("Tu as vaincu Shadow !")
+                if boss_zone == "???":
 
-                elif zone_boss == "Capitale déchue":
-                    log(
-                        "La Capitale déchue est désormais conquise."
+                    combat_log(
+                        "You defeated Shadow!"
                     )
 
-                elif zone_boss == "Citadelle déchue":
-                    log("Le Chevalier Déchu est tombé !")
-                    log(
-                        "La Citadelle déchue est désormais conquise."
-                    )
+                elif boss_zone == "Abyss":
 
-                elif zone_boss == "Abysses":
-                    log(
-                        "Le Seigneur des Abysses est tombé !"
-                    )
-                    log(
-                        "Les Abysses sont désormais conquises."
+                    combat_log(
+                        "The Lord of the Abyss has fallen!"
                     )
 
             self.level_up()
-            self.actualiser()
 
-            fenetre.after(1000, fermer_combat)
+            self.update_interface()
+
+            window.after(
+                1000,
+                close
+            )
 
         # ====================================================
-        # ATTAQUER
+        # ATTACK
         # ====================================================
 
-        def attaque():
+        def attack():
 
-            nonlocal pv_ennemi
+            nonlocal enemy_hp
 
-            if combat_termine[0]:
+            if combat_finished[0]:
                 return
 
-            if self.nom == "take":
+            if self.name == "take":
 
-                log("Take a la flemme de se battre...")
+                combat_log(
+                    "Take is too lazy to fight..."
+                )
 
             else:
 
-                esquive = False
+                dodge = False
 
-                if nom_ennemi == "fizz":
+                if enemy_name == "fizz":
 
-                    if random.randint(1, 100) <= 15:
-                        esquive = True
+                    dodge = (
+                        random.randint(1, 100) <= 15
+                    )
 
-                elif nom_ennemi == "louis":
+                elif enemy_name == "louis":
 
-                    if random.randint(1, 100) <= 25:
-                        esquive = True
+                    dodge = (
+                        random.randint(1, 100) <= 25
+                    )
 
-                if esquive:
+                if dodge:
 
-                    log(
-                        f"{nom_ennemi} esquive ton attaque !"
+                    combat_log(
+                        f"{enemy_name} dodges your attack!"
                     )
 
                 else:
 
-                    attaque_totale = self.get_attaque()
+                    total_attack = self.get_attack()
 
-                    degats = random.randint(
-                        max(1, attaque_totale - 5),
-                        attaque_totale + 5
+                    damage = random.randint(
+                        max(
+                            1,
+                            total_attack - 5
+                        ),
+                        total_attack + 5
                     )
 
-                    degats = max(
+                    damage = max(
                         1,
-                        degats - defense_ennemi
+                        damage - enemy_defense
                     )
 
-                    pv_ennemi -= degats
+                    enemy_hp -= damage
 
-                    log(
-                        f"Tu infliges {degats} dégâts !"
+                    combat_log(
+                        f"You deal {damage} damage!"
                     )
+
+                    # CRITICAL HIT
 
                     if random.randint(1, 100) <= 10:
 
-                        degats_crit = int(degats * 0.5)
-
-                        pv_ennemi -= degats_crit
-
-                        log(
-                            f"COUP CRITIQUE ! "
-                            f"+{degats_crit} dégâts !"
+                        critical = int(
+                            damage * 0.5
                         )
 
-                    # Faux
-                    if self.arme_equipee == "Faux des ténèbres":
+                        enemy_hp -= critical
 
-                        soin = int(degats * 0.25)
-
-                        if self.pv != float("inf"):
-
-                            self.pv = min(
-                                self.get_pv_max(),
-                                self.pv + soin
-                            )
-
-                        log(
-                            f"La Faux des ténèbres "
-                            f"te soigne de {soin} PV."
+                        combat_log(
+                            f"CRITICAL HIT! "
+                            f"+{critical} damage!"
                         )
 
-                    # Lame du Chevalier Déchu
-                    if self.arme_equipee == "Lame du Chevalier Déchu":
+                    # DARK SCYTHE
 
-                        soin = int(degats * 0.50)
+                    if self.equipped_weapon == "Dark Scythe":
 
-                        if self.pv != float("inf"):
-
-                            self.pv = min(
-                                self.get_pv_max(),
-                                self.pv + soin
-                            )
-
-                        log(
-                            f"La Lame du Chevalier Déchu "
-                            f"te soigne de {soin} PV."
+                        healing = int(
+                            damage * 0.25
                         )
 
-                    # Épée secrète
-                    if self.arme_equipee == "Lame du Héro Absolu":
-
-                        soin = int(degats * 0.60)
-
-                        if self.pv != float("inf"):
-
-                            self.pv = min(
-                                self.get_pv_max(),
-                                self.pv + soin
-                            )
-
-                        log(
-                            f"La Lame du Héro Absolu "
-                            f"te soigne de {soin} PV."
+                        self.hp = min(
+                            self.get_max_hp(),
+                            self.hp + healing
                         )
 
-                    # Sans
-                    if self.nom == "sans":
-
-                        soin = degats
-
-                        if self.pv != float("inf"):
-
-                            self.pv = min(
-                                self.get_pv_max(),
-                                self.pv + soin
-                            )
-
-                        log(
-                            f"Sans récupère {soin} PV."
+                        combat_log(
+                            f"The Dark Scythe "
+                            f"heals you for {healing} HP."
                         )
 
-            if pv_ennemi <= 0:
+                    # FALLEN KNIGHT BLADE
 
-                victoire()
+                    if self.equipped_weapon == "Fallen Knight Blade":
+
+                        healing = int(
+                            damage * 0.50
+                        )
+
+                        self.hp = min(
+                            self.get_max_hp(),
+                            self.hp + healing
+                        )
+
+                        combat_log(
+                            f"The Fallen Knight Blade "
+                            f"heals you for {healing} HP."
+                        )
+
+                    # ABSOLUTE HERO BLADE
+
+                    if self.equipped_weapon == "Absolute Hero Blade":
+
+                        healing = int(
+                            damage * 0.60
+                        )
+
+                        self.hp = min(
+                            self.get_max_hp(),
+                            self.hp + healing
+                        )
+
+                        combat_log(
+                            f"The Absolute Hero Blade "
+                            f"heals you for {healing} HP."
+                        )
+
+                    # SANS
+
+                    if self.name == "sans":
+
+                        self.hp = min(
+                            self.get_max_hp(),
+                            self.hp + damage
+                        )
+
+                        combat_log(
+                            f"Sans recovers {damage} HP."
+                        )
+
+            if enemy_hp <= 0:
+
+                victory()
                 return
 
-            actualiser_combat()
-            tour_ennemi()
+            update_combat()
+
+            enemy_turn()
 
         # ====================================================
-        # LANCER UN SORT
+        # SPELL
         # ====================================================
 
-        def lancer_sort(sort):
+        def cast_spell(spell_name):
 
-            nonlocal pv_ennemi
+            nonlocal enemy_hp
 
-            if combat_termine[0]:
+            if combat_finished[0]:
                 return
 
-            if sort not in self.sorts_appris:
+            if spell_name not in self.learned_spells:
 
-                log(
-                    f"Tu n'as pas appris {sort}."
+                combat_log(
+                    "You have not learned this spell."
                 )
+
                 return
 
-            info = self.sorts[sort]
-            cout = self.cout_mana(sort)
+            spell = self.spells[spell_name]
 
-            if self.mana < cout:
+            if self.mana < spell["mana"]:
 
-                log(
-                    f"Pas assez de mana ! "
-                    f"Il faut {cout} mana."
+                combat_log(
+                    f"Not enough mana! "
+                    f"You need {spell['mana']} mana."
                 )
+
                 return
 
-            self.mana -= cout
+            self.mana -= spell["mana"]
 
-            # Base proportionnelle aux dégâts d'épée
-            degats_base = random.randint(
-                max(1, self.get_attaque() - 5),
-                self.get_attaque() + 5
+            # Spells use the weapon attack
+
+            weapon_attack = self.get_attack()
+
+            base_damage = random.randint(
+                max(
+                    1,
+                    weapon_attack - 5
+                ),
+                weapon_attack + 5
             )
 
-            degats = int(
-                degats_base * info["multiplicateur"]
+            damage = int(
+                base_damage
+                * spell["multiplier"]
             )
 
-            degats = max(
+            damage = max(
                 1,
-                degats - defense_ennemi
+                damage - enemy_defense
             )
 
-            pv_ennemi -= degats
+            enemy_hp -= damage
 
-            log(
-                f"{sort} inflige {degats} dégâts !"
+            combat_log("")
+            combat_log(
+                f"You cast {spell_name}!"
             )
 
-            # Drain d'âme :
-            # plus les PV max sont élevés,
-            # plus le soin est important.
-            if sort == "Drain d'âme":
+            combat_log(
+                f"{damage} damage!"
+            )
 
-                pourcentage = 0.20
+            # =================================================
+            # ICE NOVA
+            # =================================================
 
-                soin_base = int(
-                    self.get_pv_max() * pourcentage
-                )
+            if spell_name == "Ice Nova":
 
-                soin_bonus = int(
-                    degats * 0.50
-                )
+                if random.randint(1, 100) <= 15:
 
-                soin = soin_base + soin_bonus
+                    enemy_frozen[0] = True
 
-                if self.pv != float("inf"):
-
-                    self.pv = min(
-                        self.get_pv_max(),
-                        self.pv + soin
+                    combat_log(
+                        "The enemy is FROZEN!"
                     )
 
-                log(
-                    f"Drain d'âme te rend "
-                    f"{soin} PV !"
+                    combat_log(
+                        "It will not be able to attack this turn."
+                    )
+
+                else:
+
+                    combat_log(
+                        "The ice failed to freeze the enemy."
+                    )
+
+            # =================================================
+            # SOUL DRAIN
+            # =================================================
+
+            if spell_name == "Soul Drain":
+
+                hp_coefficient = (
+                    self.get_max_hp() / 100
                 )
 
-            if pv_ennemi <= 0:
+                healing = int(
+                    damage
+                    * 0.40
+                    * hp_coefficient
+                )
 
-                victoire()
+                healing = max(
+                    1,
+                    healing
+                )
+
+                old_hp = self.hp
+
+                self.hp = min(
+                    self.get_max_hp(),
+                    self.hp + healing
+                )
+
+                actual_healing = self.hp - old_hp
+
+                combat_log(
+                    f"Soul Drain restores "
+                    f"{actual_healing} HP."
+                )
+
+                combat_log(
+                    f"(Healing based on your "
+                    f"{self.get_max_hp()} max HP)"
+                )
+
+            if enemy_hp <= 0:
+
+                victory()
                 return
 
-            actualiser_combat()
-            tour_ennemi()
+            update_combat()
+
+            enemy_turn()
 
         # ====================================================
-        # DEFENDRE
+        # SPELL MENU
         # ====================================================
 
-        def defendre():
+        def combat_spell_menu():
 
-            if combat_termine[0]:
+            if combat_finished[0]:
+                return
+
+            spell_window = tk.Toplevel(
+                window
+            )
+
+            spell_window.title(
+                "Spells"
+            )
+
+            spell_window.configure(
+                bg="black"
+            )
+
+            spell_window.geometry(
+                "500x450"
+            )
+
+            spell_window.transient(
+                window
+            )
+
+            spell_window.grab_set()
+
+            tk.Label(
+                spell_window,
+                text="SPELLS",
+                bg="black",
+                fg="white",
+                font=("Arial", 22, "bold")
+            ).pack(pady=20)
+
+            if not self.learned_spells:
+
+                tk.Label(
+                    spell_window,
+                    text="You have not learned any spells.",
+                    bg="black",
+                    fg="white",
+                    font=("Arial", 13)
+                ).pack(pady=20)
+
+            else:
+
+                for spell_name in self.learned_spells:
+
+                    spell = self.spells[spell_name]
+
+                    tk.Button(
+                        spell_window,
+                        text=(
+                            f"{spell_name} - "
+                            f"{spell['mana']} mana"
+                        ),
+                        command=lambda s=spell_name: (
+                            spell_window.destroy(),
+                            cast_spell(s)
+                        ),
+                        bg="#202020",
+                        fg="white",
+                        activebackground="#404040",
+                        activeforeground="white",
+                        width=32,
+                        height=2,
+                        font=("Arial", 11, "bold")
+                    ).pack(pady=6)
+
+            tk.Button(
+                spell_window,
+                text="Back",
+                command=spell_window.destroy,
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=20,
+                height=2
+            ).pack(pady=20)
+
+        # ====================================================
+        # DEFEND
+        # ====================================================
+
+        def defend():
+
+            if combat_finished[0]:
                 return
 
             defense_bonus[0] = 10
 
-            log(
-                "Tu te mets en position défensive."
+            combat_log(
+                "You take a defensive stance."
             )
 
-            tour_ennemi()
+            enemy_turn()
 
         # ====================================================
         # POTION
@@ -1316,257 +1386,270 @@ class ShadowRPG:
 
         def potion():
 
-            if combat_termine[0]:
+            if combat_finished[0]:
                 return
 
             if self.potions <= 0:
 
-                log("Tu n'as plus de potions.")
+                combat_log(
+                    "You have no potions left."
+                )
+
                 return
 
-            if self.pv == self.get_pv_max():
+            if (
+                self.hp >= self.get_max_hp()
+                and self.mana >= self.get_max_mana()
+            ):
 
-                log("Tes PV sont déjà au maximum.")
+                combat_log(
+                    "Your HP and mana are already full."
+                )
+
                 return
 
             self.potions -= 1
 
-            soin = random.randint(20, 40)
-
-            if self.pv != float("inf"):
-
-                self.pv = min(
-                    self.get_pv_max(),
-                    self.pv + soin
-                )
-
-            log(
-                f"Tu récupères {soin} PV."
+            hp_healing = random.randint(
+                20,
+                40
             )
 
-            actualiser_combat()
-            tour_ennemi()
+            mana_healing = random.randint(
+                10,
+                25
+            )
+
+            old_hp = self.hp
+            old_mana = self.mana
+
+            self.hp = min(
+                self.get_max_hp(),
+                self.hp + hp_healing
+            )
+
+            self.mana = min(
+                self.get_max_mana(),
+                self.mana + mana_healing
+            )
+
+            actual_hp_healing = self.hp - old_hp
+            actual_mana_healing = self.mana - old_mana
+
+            combat_log(
+                f"Potion: +{actual_hp_healing} HP "
+                f"and +{actual_mana_healing} mana."
+            )
+
+            update_combat()
+
+            enemy_turn()
 
         # ====================================================
-        # FUIR
+        # FLEE
         # ====================================================
 
-        def fuir():
+        def flee():
 
-            if combat_termine[0]:
+            if combat_finished[0]:
                 return
 
             if boss:
 
-                log(
-                    "Impossible de fuir devant un boss."
+                combat_log(
+                    "You cannot flee from a boss."
                 )
+
                 return
 
             if random.randint(1, 100) <= 50:
 
-                log("Tu réussis à fuir.")
+                combat_log(
+                    "You successfully flee."
+                )
 
-                fenetre.after(
+                window.after(
                     500,
-                    fermer_combat
+                    close
                 )
 
             else:
 
-                log("Tu n'arrives pas à fuir.")
-                tour_ennemi()
-
-        # ====================================================
-        # TOUR ENNEMI
-        # ====================================================
-
-        def tour_ennemi():
-
-            if combat_termine[0]:
-                return
-
-            if pv_ennemi <= 0:
-                return
-
-            if nom_ennemi == "take":
-
-                log("Take a la flemme.")
-                log("Il ne t'attaque pas.")
-
-            elif nom_ennemi == "chibicat12364":
-
-                log(
-                    "Chibicat12364 vous hurle dessus !"
+                combat_log(
+                    "You fail to escape."
                 )
 
-                log(
-                    "Elle vous laisse à 1 PV et part."
+                enemy_turn()
+
+        # ====================================================
+        # ENEMY TURN
+        # ====================================================
+
+        def enemy_turn():
+
+            if combat_finished[0]:
+                return
+
+            if enemy_hp <= 0:
+                return
+
+            # FROZEN ENEMY
+
+            if enemy_frozen[0]:
+
+                combat_log(
+                    f"{enemy_name} is frozen "
+                    f"and cannot attack!"
                 )
 
-                self.pv = 1
+                enemy_frozen[0] = False
+                defense_bonus[0] = 0
 
-                fenetre.after(
+                update_combat()
+
+                return
+
+            # TAKE
+
+            if enemy_name == "take":
+
+                combat_log(
+                    "Take is too lazy."
+                )
+
+                combat_log(
+                    "He does not attack you."
+                )
+
+            # CHIBICAT
+
+            elif enemy_name == "chibicat12364":
+
+                combat_log(
+                    "Chibicat12364 screams at you!"
+                )
+
+                combat_log(
+                    "She leaves you at 1 HP and walks away."
+                )
+
+                self.hp = 1
+
+                window.after(
                     500,
-                    fermer_combat
+                    close
                 )
 
                 return
 
             else:
 
-                if self.joueur_esquive():
+                if self.player_dodges():
 
-                    actualiser_combat()
                     defense_bonus[0] = 0
+
+                    update_combat()
+
                     return
 
-                degats = random.randint(
-                    max(1, attaque_ennemi - 3),
-                    attaque_ennemi + 3
+                damage = random.randint(
+                    max(
+                        1,
+                        enemy_attack - 3
+                    ),
+                    enemy_attack + 3
                 )
 
-                degats -= self.get_defense()
-                degats -= defense_bonus[0]
+                damage -= self.get_defense()
+                damage -= defense_bonus[0]
 
-                degats = max(1, degats)
+                damage = max(
+                    1,
+                    damage
+                )
 
-                if self.pv != float("inf"):
-                    self.pv -= degats
+                self.hp -= damage
 
-                log(
-                    f"{nom_ennemi} t'inflige "
-                    f"{degats} dégâts !"
+                combat_log(
+                    f"{enemy_name} deals "
+                    f"{damage} damage to you!"
                 )
 
             defense_bonus[0] = 0
-            actualiser_combat()
 
-            if self.pv != float("inf"):
+            update_combat()
 
-                if self.pv <= 0:
+            if self.hp <= 0:
 
-                    combat_termine[0] = True
+                combat_finished[0] = True
 
-                    fenetre.after(
-                        500,
-                        fermer_combat
-                    )
-
-                    self.mort()
+                self.death()
 
         # ====================================================
-        # BOUTONS COMBAT
+        # COMBAT BUTTONS
         # ====================================================
 
-        boutons = tk.Frame(
-            fenetre,
+        buttons = tk.Frame(
+            window,
             bg="black"
         )
-        boutons.pack(pady=20)
 
-        def bouton_combat(texte, commande, colonne):
+        buttons.pack(pady=15)
+
+        def combat_button(
+            text,
+            command,
+            column
+        ):
 
             tk.Button(
-                boutons,
-                text=texte,
-                command=commande,
+                buttons,
+                text=text,
+                command=command,
                 bg="#202020",
                 fg="white",
                 activebackground="#404040",
                 activeforeground="white",
-                width=16,
+                width=15,
                 height=2,
                 font=("Arial", 11, "bold")
             ).grid(
                 row=0,
-                column=colonne,
+                column=column,
                 padx=5
             )
 
-        bouton_combat("Attaquer", attaque, 0)
-        bouton_combat("Défendre", defendre, 1)
-        bouton_combat("Potion", potion, 2)
+        combat_button(
+            "Attack",
+            attack,
+            0
+        )
 
-        # ====================================================
-        # MENU SORTS EN COMBAT
-        # ====================================================
+        combat_button(
+            "Spells",
+            combat_spell_menu,
+            1
+        )
 
-        if self.sorts_appris:
+        combat_button(
+            "Defend",
+            defend,
+            2
+        )
 
-            bouton_combat(
-                "Sorts",
-                lambda: menu_sorts_combat(),
-                3
-            )
+        combat_button(
+            "Potion",
+            potion,
+            3
+        )
 
-            bouton_combat(
-                "Fuir",
-                fuir,
-                4
-            )
+        combat_button(
+            "Flee",
+            flee,
+            4
+        )
 
-        else:
-
-            bouton_combat(
-                "Fuir",
-                fuir,
-                3
-            )
-
-        def menu_sorts_combat():
-
-            fenetre_sort = tk.Toplevel(fenetre)
-            fenetre_sort.title("Sorts")
-            fenetre_sort.configure(bg="black")
-            fenetre_sort.geometry("500x500")
-            fenetre_sort.transient(fenetre)
-            fenetre_sort.grab_set()
-
-            tk.Label(
-                fenetre_sort,
-                text="SORTS",
-                bg="black",
-                fg="white",
-                font=("Arial", 24, "bold")
-            ).pack(pady=20)
-
-            for sort in self.sorts_appris:
-
-                info = self.sorts[sort]
-                cout = self.cout_mana(sort)
-
-                tk.Button(
-                    fenetre_sort,
-                    text=(
-                        f"{sort}\n"
-                        f"Mana : {cout}"
-                    ),
-                    command=lambda s=sort: (
-                        fenetre_sort.destroy(),
-                        lancer_sort(s)
-                    ),
-                    bg="#202020",
-                    fg="white",
-                    activebackground="#404040",
-                    activeforeground="white",
-                    width=35,
-                    height=3
-                ).pack(pady=6)
-
-            tk.Button(
-                fenetre_sort,
-                text="Retour",
-                command=fenetre_sort.destroy,
-                bg="#202020",
-                fg="white",
-                activebackground="#404040",
-                activeforeground="white",
-                width=20,
-                height=2
-            ).pack(pady=15)
-
-        actualiser_combat()
+        update_combat()
 
     # ========================================================
     # LEVEL UP
@@ -1574,633 +1657,409 @@ class ShadowRPG:
 
     def level_up(self):
 
-        while self.xp >= self.niveau * 50:
+        while self.xp >= self.level * 50:
 
-            self.xp -= self.niveau * 50
-            self.niveau += 1
+            self.xp -= self.level * 50
 
-            self.pv_max += 20
-            self.mana_max += 10
+            self.level += 1
 
-            self.attaque_base += 3
-            self.defense_base += 2
+            self.max_hp += 20
+            self.max_mana += 5
 
-            self.pv = self.get_pv_max()
-            self.mana = self.get_mana_max()
+            self.base_attack += 3
+            self.base_defense += 2
 
-            self.afficher(
-                f"LEVEL UP ! Tu es maintenant "
-                f"niveau {self.niveau}."
+            self.hp = self.get_max_hp()
+            self.mana = self.get_max_mana()
+
+            self.display(
+                f"LEVEL UP! "
+                f"You are now level "
+                f"{self.level}."
             )
 
     # ========================================================
-    # POTION
+    # POTION OUTSIDE COMBAT
     # ========================================================
 
-    def utiliser_potion(self):
+    def use_potion(self):
 
         if self.potions <= 0:
 
-            self.message(
-                "Tu n'as plus de potions."
+            self.show_message(
+                "You have no potions left."
             )
+
             return
 
-        if self.pv == self.get_pv_max():
+        if (
+            self.hp >= self.get_max_hp()
+            and self.mana >= self.get_max_mana()
+        ):
 
-            self.message(
-                "Tes PV sont déjà au maximum."
+            self.show_message(
+                "Your HP and mana are already full."
             )
+
             return
 
         self.potions -= 1
 
-        soin = random.randint(20, 40)
-
-        self.pv = min(
-            self.get_pv_max(),
-            self.pv + soin
+        hp_healing = random.randint(
+            20,
+            40
         )
 
-        self.afficher(
-            f"Tu utilises une potion "
-            f"et récupères {soin} PV."
+        mana_healing = random.randint(
+            10,
+            25
         )
 
-        self.actualiser()
+        old_hp = self.hp
+        old_mana = self.mana
+
+        self.hp = min(
+            self.get_max_hp(),
+            self.hp + hp_healing
+        )
+
+        self.mana = min(
+            self.get_max_mana(),
+            self.mana + mana_healing
+        )
+
+        actual_hp_healing = self.hp - old_hp
+        actual_mana_healing = self.mana - old_mana
+
+        self.display(
+            f"Potion: +{actual_hp_healing} HP "
+            f"and +{actual_mana_healing} mana."
+        )
+
+        self.update_interface()
 
     # ========================================================
-    # MENU ZONES
+    # SHOP
     # ========================================================
 
-    def menu_zones(self):
+    def shop(self):
 
-        fenetre = tk.Toplevel(self.root)
-        fenetre.title("Zones")
-        fenetre.configure(bg="black")
-        fenetre.attributes("-fullscreen", True)
+        window = tk.Toplevel(
+            self.root
+        )
+
+        window.title(
+            "Shop"
+        )
+
+        window.configure(
+            bg="black"
+        )
+
+        window.attributes(
+            "-fullscreen",
+            True
+        )
+
+        # ====================================================
+        # TITLE
+        # ====================================================
 
         tk.Label(
-            fenetre,
-            text="CHOISIS UNE ZONE",
+            window,
+            text="SHOP",
             bg="black",
             fg="white",
             font=("Arial", 28, "bold")
-        ).pack(pady=30)
+        ).pack(pady=8)
 
-        zones_visibles = [
-            "Plaine",
-            "Forêt",
-            "Montagne",
-            "Royaume des Ombres",
-            "Capitale déchue",
-            "Citadelle déchue",
-            "Abysses"
-        ]
-
-        for zone_nom in zones_visibles:
-
-            zone = self.zones[zone_nom]
-
-            tk.Button(
-                fenetre,
-                text=(
-                    f"{zone_nom} "
-                    f"(Niveau {zone['niveau']})"
-                ),
-                command=lambda z=zone_nom:
-                self.changer_zone(z, fenetre),
-                bg="#202020",
-                fg="white",
-                activebackground="#404040",
-                activeforeground="white",
-                width=35,
-                height=2
-            ).pack(pady=7)
+        # ====================================================
+        # CLOSE
+        # ====================================================
 
         tk.Button(
-            fenetre,
-            text="Retour",
-            command=fenetre.destroy,
+            window,
+            text="X",
+            command=window.destroy,
             bg="#202020",
             fg="white",
             activebackground="#404040",
             activeforeground="white",
-            width=20,
-            height=2
-        ).pack(pady=30)
-
-    # ========================================================
-    # CHANGER ZONE
-    # ========================================================
-
-    def changer_zone(self, zone_nom, fenetre):
-
-        zone = self.zones[zone_nom]
-
-        if self.niveau < zone["niveau"]:
-
-            self.message(
-                f"Tu dois être niveau "
-                f"{zone['niveau']}."
-            )
-            return
-
-        if self.mobs_vaincus < zone["mobs_requis"]:
-
-            self.message(
-                f"Tu dois avoir vaincu "
-                f"{zone['mobs_requis']} mobs."
-            )
-            return
-
-        ordre = [
-            "Plaine",
-            "Forêt",
-            "Montagne",
-            "Royaume des Ombres",
-            "Capitale déchue",
-            "Citadelle déchue",
-            "Abysses"
-        ]
-
-        index = ordre.index(zone_nom)
-
-        if index > 0:
-
-            precedente = ordre[index - 1]
-
-            if not self.zones[precedente]["boss_vaincu"]:
-
-                self.message(
-                    f"Tu dois vaincre le boss de "
-                    f"{precedente} avant d'entrer ici."
-                )
-                return
-
-        self.zone_actuelle = zone_nom
-        fenetre.destroy()
-
-        self.afficher(
-            f"Tu entres dans la zone : {zone_nom}"
+            width=4,
+            height=2,
+            font=("Arial", 12, "bold")
+        ).place(
+            relx=0.97,
+            rely=0.02,
+            anchor="ne"
         )
 
-        self.actualiser()
-
-    # ========================================================
-    # ZONE SECRÈTE
-    # ========================================================
-
-    def zone_secret(self):
-
-        if self.mobs_vaincus < 100:
-
-            self.message(
-                "La zone secrète est inaccessible."
-            )
-            return
-
-        self.zone_actuelle = "???"
-
-        self.afficher(
-            "Une étrange présence t'attire..."
-        )
-
-        self.afficher(
-            "Tu arrives dans la zone ???"
-        )
-
-        self.actualiser()
-
-    # ========================================================
-    # INVENTAIRE
-    # ========================================================
-
-    def inventaire(self):
-
-        fenetre = tk.Toplevel(self.root)
-        fenetre.title("Inventaire")
-        fenetre.configure(bg="black")
-        fenetre.attributes("-fullscreen", True)
+        # ====================================================
+        # COINS
+        # ====================================================
 
         tk.Label(
-            fenetre,
-            text="INVENTAIRE",
-            bg="black",
-            fg="white",
-            font=("Arial", 28, "bold")
-        ).pack(pady=20)
-
-        tk.Label(
-            fenetre,
-            text=f"CLASSE : {self.classe or 'Aucune'}",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack(pady=5)
-
-        tk.Label(
-            fenetre,
-            text="ARMES",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack()
-
-        for arme in self.inventaire_armes:
-
-            info = self.armes[arme]
-
-            texte = (
-                f"{arme} | "
-                f"+{info['attaque']} attaque | "
-                f"Niveau {info['niveau']}"
-            )
-
-            if arme == self.arme_equipee:
-                texte += " | ÉQUIPÉE"
-
-            tk.Button(
-                fenetre,
-                text=texte,
-                command=lambda a=arme:
-                self.equiper_arme(a),
-                bg="#202020",
-                fg="white",
-                activebackground="#404040",
-                activeforeground="white",
-                width=55,
-                height=2
-            ).pack(pady=4)
-
-        tk.Label(
-            fenetre,
-            text="ARMURES",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack(pady=15)
-
-        for armure in self.inventaire_armures:
-
-            info = self.armures[armure]
-
-            texte = (
-                f"{armure} | "
-                f"+{info['defense']} défense | "
-                f"+{info['pv']} PV"
-            )
-
-            if armure == self.armure_equipee:
-                texte += " | ÉQUIPÉE"
-
-            tk.Button(
-                fenetre,
-                text=texte,
-                command=lambda a=armure:
-                self.equiper_armure(a),
-                bg="#202020",
-                fg="white",
-                activebackground="#404040",
-                activeforeground="white",
-                width=55,
-                height=2
-            ).pack(pady=4)
-
-        tk.Label(
-            fenetre,
-            text="SORTS APPRIS",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack(pady=15)
-
-        if self.sorts_appris:
-
-            for sort in self.sorts_appris:
-
-                info = self.sorts[sort]
-
-                tk.Label(
-                    fenetre,
-                    text=(
-                        f"{sort} | "
-                        f"{info['mana']} mana"
-                    ),
-                    bg="black",
-                    fg="white",
-                    font=("Arial", 12)
-                ).pack(pady=2)
-
-        else:
-
-            tk.Label(
-                fenetre,
-                text="Aucun sort appris.",
-                bg="black",
-                fg="white"
-            ).pack()
-
-        tk.Button(
-            fenetre,
-            text="Retour",
-            command=fenetre.destroy,
-            bg="#202020",
-            fg="white",
-            activebackground="#404040",
-            activeforeground="white",
-            width=20,
-            height=2
-        ).pack(pady=20)
-
-    # ========================================================
-    # ÉQUIPER
-    # ========================================================
-
-    def equiper_arme(self, arme):
-
-        self.arme_equipee = arme
-
-        self.afficher(
-            f"Tu équipes {arme}."
-        )
-
-        self.actualiser()
-
-    def equiper_armure(self, armure):
-
-        self.armure_equipee = armure
-
-        self.afficher(
-            f"Tu équipes {armure}."
-        )
-
-        self.actualiser()
-
-    # ========================================================
-    # BOUTIQUE
-    # ========================================================
-
-    def boutique(self):
-
-        fenetre = tk.Toplevel(self.root)
-        fenetre.title("Boutique")
-        fenetre.configure(bg="black")
-        fenetre.attributes("-fullscreen", True)
-
-        tk.Label(
-            fenetre,
-            text="BOUTIQUE",
-            bg="black",
-            fg="white",
-            font=("Arial", 28, "bold")
-        ).pack(pady=10)
-
-        tk.Label(
-            fenetre,
-            text=f"Pièces : {self.pieces}",
+            window,
+            text=f"Coins: {self.coins}",
             bg="black",
             fg="white",
             font=("Arial", 16)
-        ).pack(pady=3)
+        ).pack(pady=2)
 
         # ====================================================
-        # CONTENEUR PRINCIPAL
-        # ARMES / ARMURES À GAUCHE
-        # SORTS À DROITE
+        # CONTENT
         # ====================================================
 
-        contenu = tk.Frame(
-            fenetre,
+        content = tk.Frame(
+            window,
             bg="black"
         )
-        contenu.pack(
+
+        content.pack(
             fill="both",
             expand=True,
-            padx=20,
+            padx=25,
             pady=5
         )
 
-        gauche = tk.Frame(
-            contenu,
+        # ====================================================
+        # LEFT
+        # WEAPONS + ARMOR
+        # ====================================================
+
+        left = tk.Frame(
+            content,
             bg="black"
         )
-        gauche.pack(
+
+        left.pack(
             side="left",
             fill="both",
             expand=True,
-            padx=10
+            padx=15
         )
 
-        droite = tk.Frame(
-            contenu,
+        tk.Label(
+            left,
+            text="WEAPONS",
+            bg="black",
+            fg="white",
+            font=("Arial", 20, "bold")
+        ).pack(pady=4)
+
+        for weapon, info in self.weapons.items():
+
+            if (
+                weapon == "Absolute Hero Blade"
+                and not self.secret_sword_discovered
+            ):
+                continue
+
+            if weapon in self.weapon_inventory:
+                continue
+
+            text = (
+                f"{weapon}\n"
+                f"+{info['attack']} ATK | "
+                f"{info['price']} coins | "
+                f"Lvl. {info['required_level']}"
+            )
+
+            tk.Button(
+                left,
+                text=text,
+                command=lambda w=weapon:
+                self.buy_weapon(w),
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=38,
+                height=2
+            ).pack(pady=2)
+
+        tk.Label(
+            left,
+            text="ARMOR",
+            bg="black",
+            fg="white",
+            font=("Arial", 20, "bold")
+        ).pack(pady=5)
+
+        for armor, info in self.armors.items():
+
+            if armor in self.armor_inventory:
+                continue
+
+            text = (
+                f"{armor}\n"
+                f"+{info['defense']} DEF | "
+                f"+{info['hp']} HP | "
+                f"{info['price']} coins | "
+                f"Lvl. {info['required_level']}"
+            )
+
+            tk.Button(
+                left,
+                text=text,
+                command=lambda a=armor:
+                self.buy_armor(a),
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=38,
+                height=2
+            ).pack(pady=2)
+
+        # ====================================================
+        # RIGHT
+        # SPELLS
+        # ====================================================
+
+        right = tk.Frame(
+            content,
             bg="black"
         )
-        droite.pack(
+
+        right.pack(
             side="right",
             fill="both",
             expand=True,
-            padx=10
+            padx=15
         )
 
-        # ====================================================
-        # GAUCHE : POTION
-        # ====================================================
-
         tk.Label(
-            gauche,
-            text="POTIONS",
+            right,
+            text="SPELLS",
             bg="black",
             fg="white",
-            font=("Arial", 17, "bold")
+            font=("Arial", 20, "bold")
         ).pack(pady=4)
 
-        tk.Button(
-            gauche,
-            text="Potion - 10 pièces",
-            command=self.acheter_potion,
-            bg="#202020",
-            fg="white",
-            activebackground="#404040",
-            activeforeground="white",
-            width=30,
-            height=1
-        ).pack(pady=3)
+        for spell_name, info in self.spells.items():
 
-        # ====================================================
-        # GAUCHE : ARMES
-        # ====================================================
+            if spell_name in self.learned_spells:
 
-        tk.Label(
-            gauche,
-            text="ARMES",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack(pady=5)
+                text = (
+                    f"{spell_name}\n"
+                    f"ALREADY LEARNED"
+                )
 
-        for arme, info in self.armes.items():
+            else:
 
-            if arme == "Lame du Héro Absolu":
-                if not self.epee_secrete_decouverte:
-                    continue
-
-            if arme in self.inventaire_armes:
-                continue
-
-            texte = (
-                f"{arme}\n"
-                f"+{info['attaque']} ATK | "
-                f"{info['prix']} pièces | "
-                f"Niv. {info['niveau_requis']}"
-            )
+                text = (
+                    f"{spell_name}\n"
+                    f"{info['mana']} mana | "
+                    f"{info['price']} coins | "
+                    f"Lvl. {info['required_level']}"
+                )
 
             tk.Button(
-                gauche,
-                text=texte,
-                command=lambda a=arme:
-                self.acheter_arme(a),
+                right,
+                text=text,
+                command=lambda s=spell_name:
+                self.buy_spell(s),
                 bg="#202020",
                 fg="white",
                 activebackground="#404040",
                 activeforeground="white",
-                width=45,
-                height=2,
-                font=("Arial", 9)
-            ).pack(pady=2)
-
-        # ====================================================
-        # GAUCHE : ARMURES
-        # ====================================================
-
-        tk.Label(
-            gauche,
-            text="ARMURES",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack(pady=5)
-
-        for armure, info in self.armures.items():
-
-            if armure in self.inventaire_armures:
-                continue
-
-            texte = (
-                f"{armure}\n"
-                f"+{info['defense']} DEF | "
-                f"+{info['pv']} PV | "
-                f"{info['prix']} pièces | "
-                f"Niv. {info['niveau_requis']}"
-            )
-
-            tk.Button(
-                gauche,
-                text=texte,
-                command=lambda a=armure:
-                self.acheter_armure(a),
-                bg="#202020",
-                fg="white",
-                activebackground="#404040",
-                activeforeground="white",
-                width=45,
-                height=2,
-                font=("Arial", 9)
-            ).pack(pady=2)
-
-        # ====================================================
-        # DROITE : SORTS
-        # ====================================================
-
-        tk.Label(
-            droite,
-            text="SORTS",
-            bg="black",
-            fg="white",
-            font=("Arial", 18, "bold")
-        ).pack(pady=5)
-
-        tk.Label(
-            droite,
-            text="Apprends des sorts utilisant du mana.",
-            bg="black",
-            fg="white",
-            font=("Arial", 10)
-        ).pack(pady=3)
-
-        for sort, info in self.sorts.items():
-
-            if sort in self.sorts_appris:
-                continue
-
-            cout_mana = self.cout_mana(sort)
-
-            texte = (
-                f"{sort}\n"
-                f"{info['prix']} pièces | "
-                f"Niv. {info['niveau_requis']} | "
-                f"{cout_mana} mana"
-            )
-
-            tk.Button(
-                droite,
-                text=texte,
-                command=lambda s=sort:
-                self.apprendre_sort(s),
-                bg="#202020",
-                fg="white",
-                activebackground="#404040",
-                activeforeground="white",
-                width=45,
-                height=2,
-                font=("Arial", 10)
+                width=38,
+                height=3
             ).pack(pady=4)
 
         # ====================================================
-        # DROITE : AMÉLIORATIONS
+        # POTION
         # ====================================================
 
         tk.Label(
-            droite,
-            text="AMÉLIORATIONS",
+            right,
+            text="POTIONS",
             bg="black",
             fg="white",
             font=("Arial", 18, "bold")
-        ).pack(pady=10)
+        ).pack(pady=5)
 
         tk.Button(
-            droite,
-            text="Améliorer l'arme équipée",
-            command=self.ameliorer_arme,
+            right,
+            text="Potion - 10 coins",
+            command=self.buy_potion,
             bg="#202020",
             fg="white",
             activebackground="#404040",
             activeforeground="white",
-            width=30,
-            height=1
+            width=25,
+            height=2
         ).pack(pady=3)
 
+        # ====================================================
+        # UPGRADES
+        # ====================================================
+
+        upgrades = tk.Frame(
+            window,
+            bg="black"
+        )
+
+        upgrades.pack(
+            pady=2
+        )
+
         tk.Button(
-            droite,
-            text="Améliorer l'armure équipée",
-            command=self.ameliorer_armure,
+            upgrades,
+            text="Upgrade equipped weapon",
+            command=self.upgrade_weapon,
             bg="#202020",
             fg="white",
             activebackground="#404040",
             activeforeground="white",
-            width=30,
-            height=1
-        ).pack(pady=3)
+            width=28
+        ).grid(
+            row=0,
+            column=0,
+            padx=5
+        )
+
+        tk.Button(
+            upgrades,
+            text="Upgrade equipped armor",
+            command=self.upgrade_armor,
+            bg="#202020",
+            fg="white",
+            activebackground="#404040",
+            activeforeground="white",
+            width=28
+        ).grid(
+            row=0,
+            column=1,
+            padx=5
+        )
 
         # ====================================================
-        # BOUTON SECRET INVISIBLE
+        # BACK
         # ====================================================
 
-        bouton_secret = tk.Button(
-            fenetre,
+        tk.Button(
+            window,
+            text="Back",
+            command=window.destroy,
+            bg="#202020",
+            fg="white",
+            activebackground="#404040",
+            activeforeground="white",
+            width=20,
+            height=2
+        ).pack(pady=5)
+
+        # ====================================================
+        # INVISIBLE SECRET BUTTON
+        # ====================================================
+
+        tk.Button(
+            window,
             text="",
             command=lambda:
-            self.decouvrir_epee_secrete(fenetre),
+            self.discover_secret_sword(window),
             bg="black",
             activebackground="black",
             relief="flat",
@@ -2208,466 +2067,1060 @@ class ShadowRPG:
             highlightthickness=0,
             width=4,
             height=2
-        )
-
-        bouton_secret.place(
+        ).place(
             relx=0.0,
             rely=1.0,
             anchor="sw"
         )
 
-        # ====================================================
-        # RETOUR
-        # ====================================================
-
-        tk.Button(
-            fenetre,
-            text="Retour",
-            command=fenetre.destroy,
-            bg="#202020",
-            fg="white",
-            activebackground="#404040",
-            activeforeground="white",
-            width=20,
-            height=1
-        ).pack(pady=8)
-
     # ========================================================
-    # ÉPÉE SECRÈTE
+    # SECRET SWORD
     # ========================================================
 
-    def decouvrir_epee_secrete(self, fenetre):
+    def discover_secret_sword(
+        self,
+        window
+    ):
 
-        if self.epee_secrete_decouverte:
+        if self.secret_sword_discovered:
 
-            self.message(
-                "Tu as déjà découvert le secret..."
+            self.show_message(
+                "You have already discovered the secret..."
             )
+
             return
 
-        self.epee_secrete_decouverte = True
+        self.secret_sword_discovered = True
 
-        self.afficher(
-            "Une forge souterraine est apparue..."
+        self.display(
+            "An underground forge has appeared..."
         )
 
-        self.message(
-            "Tu as découvert une arme secrète !\n\n"
-            "Lame du Héro Absolu\n"
+        self.show_message(
+            "You discovered a secret weapon!\n\n"
+            "Absolute Hero Blade\n"
             "+200 ATK\n"
-            "Prix : 5000 pièces\n"
-            "Niveau requis : 25"
+            "Price: 5000 coins\n"
+            "Required level: 25"
         )
 
-        fenetre.destroy()
-        self.actualiser()
+        window.destroy()
+
+        self.update_interface()
 
     # ========================================================
-    # ACHATS
+    # BUY POTION
     # ========================================================
 
-    def acheter_potion(self):
+    def buy_potion(self):
 
-        if self.pieces < 10:
+        if self.coins < 10:
 
-            self.message(
-                "Tu n'as pas assez de pièces."
+            self.show_message(
+                "You do not have enough coins."
             )
+
             return
 
-        self.pieces -= 10
+        self.coins -= 10
         self.potions += 1
 
-        self.afficher(
-            "Tu achètes une potion."
+        self.display(
+            "You bought a potion."
         )
 
-        self.actualiser()
-
-    def acheter_arme(self, arme):
-
-        info = self.armes[arme]
-
-        if self.niveau < info["niveau_requis"]:
-
-            self.message(
-                f"Niveau {info['niveau_requis']} requis."
-            )
-            return
-
-        if self.pieces < info["prix"]:
-
-            self.message(
-                "Tu n'as pas assez de pièces."
-            )
-            return
-
-        self.pieces -= info["prix"]
-        self.inventaire_armes.append(arme)
-
-        self.afficher(
-            f"Tu achètes {arme}."
-        )
-
-        self.actualiser()
-
-    def acheter_armure(self, armure):
-
-        info = self.armures[armure]
-
-        if self.niveau < info["niveau_requis"]:
-
-            self.message(
-                f"Niveau {info['niveau_requis']} requis."
-            )
-            return
-
-        if self.pieces < info["prix"]:
-
-            self.message(
-                "Tu n'as pas assez de pièces."
-            )
-            return
-
-        self.pieces -= info["prix"]
-        self.inventaire_armures.append(armure)
-
-        self.afficher(
-            f"Tu achètes {armure}."
-        )
-
-        self.actualiser()
+        self.update_interface()
 
     # ========================================================
-    # APPRENDRE SORT
+    # BUY WEAPON
     # ========================================================
 
-    def apprendre_sort(self, sort):
+    def buy_weapon(
+        self,
+        weapon
+    ):
 
-        info = self.sorts[sort]
+        if weapon in self.weapon_inventory:
 
-        if self.niveau < info["niveau_requis"]:
-
-            self.message(
-                f"Niveau {info['niveau_requis']} requis."
+            self.show_message(
+                "You already own this weapon."
             )
+
             return
 
-        if self.pieces < info["prix"]:
+        info = self.weapons[weapon]
 
-            self.message(
-                "Tu n'as pas assez de pièces."
+        if self.level < info["required_level"]:
+
+            self.show_message(
+                f"Level "
+                f"{info['required_level']} required."
             )
+
             return
 
-        self.pieces -= info["prix"]
-        self.sorts_appris.append(sort)
+        if self.coins < info["price"]:
 
-        self.afficher(
-            f"Tu apprends le sort {sort} !"
+            self.show_message(
+                "You do not have enough coins."
+            )
+
+            return
+
+        self.coins -= info["price"]
+
+        self.weapon_inventory.append(
+            weapon
         )
 
-        self.message(
-            f"Tu as appris {sort} !\n\n"
-            f"Coût : {info['mana']} mana\n"
-            f"Multiplicateur : x{info['multiplicateur']}"
+        self.display(
+            f"You bought {weapon}."
         )
 
-        self.actualiser()
+        self.update_interface()
 
     # ========================================================
-    # AMÉLIORATIONS
+    # BUY ARMOR
     # ========================================================
 
-    def ameliorer_arme(self):
+    def buy_armor(
+        self,
+        armor
+    ):
 
-        arme = self.armes[self.arme_equipee]
+        if armor in self.armor_inventory:
 
-        prochain_niveau = arme["niveau"] + 1
-        prix = prochain_niveau * 50
-
-        if self.niveau < prochain_niveau:
-
-            self.message(
-                f"Il faut être niveau {prochain_niveau}."
+            self.show_message(
+                "You already own this armor."
             )
+
             return
 
-        if self.pieces < prix:
+        info = self.armors[armor]
 
-            self.message(
-                "Tu n'as pas assez de pièces."
+        if self.level < info["required_level"]:
+
+            self.show_message(
+                f"Level "
+                f"{info['required_level']} required."
             )
+
             return
 
-        self.pieces -= prix
-        arme["niveau"] += 1
+        if self.coins < info["price"]:
 
-        self.afficher(
-            f"{self.arme_equipee} passe niveau "
-            f"{arme['niveau']}."
+            self.show_message(
+                "You do not have enough coins."
+            )
+
+            return
+
+        self.coins -= info["price"]
+
+        self.armor_inventory.append(
+            armor
         )
 
-        self.actualiser()
-
-    def ameliorer_armure(self):
-
-        armure = self.armures[self.armure_equipee]
-
-        prochain_niveau = armure["niveau"] + 1
-        prix = prochain_niveau * 60
-
-        if self.niveau < prochain_niveau:
-
-            self.message(
-                f"Il faut être niveau {prochain_niveau}."
-            )
-            return
-
-        if self.pieces < prix:
-
-            self.message(
-                "Tu n'as pas assez de pièces."
-            )
-            return
-
-        self.pieces -= prix
-        armure["niveau"] += 1
-
-        self.afficher(
-            f"{self.armure_equipee} passe niveau "
-            f"{armure['niveau']}."
+        self.display(
+            f"You bought {armor}."
         )
 
-        self.actualiser()
+        self.update_interface()
 
     # ========================================================
-    # MENU CLASSES
+    # BUY SPELL
     # ========================================================
 
-    def menu_classes(self):
+    def buy_spell(
+        self,
+        spell_name
+    ):
 
-        fenetre = tk.Toplevel(self.root)
+        if spell_name in self.learned_spells:
 
-        fenetre.title("Classes")
-        fenetre.configure(bg="black")
-        fenetre.attributes("-fullscreen", True)
+            self.show_message(
+                "You already know this spell."
+            )
+
+            return
+
+        info = self.spells[spell_name]
+
+        if self.level < info["required_level"]:
+
+            self.show_message(
+                f"You must be level "
+                f"{info['required_level']}."
+            )
+
+            return
+
+        if self.coins < info["price"]:
+
+            self.show_message(
+                "You do not have enough coins."
+            )
+
+            return
+
+        self.coins -= info["price"]
+
+        self.learned_spells.append(
+            spell_name
+        )
+
+        self.display(
+            f"You learned the spell: "
+            f"{spell_name}!"
+        )
+
+        self.show_message(
+            f"Spell learned: {spell_name}!\n\n"
+            f"Cost: {info['mana']} mana\n"
+            f"Multiplier: "
+            f"x{info['multiplier']}"
+        )
+
+        self.update_interface()
+
+    # ========================================================
+    # UPGRADE WEAPON
+    # ========================================================
+
+    def upgrade_weapon(self):
+
+        weapon = self.weapons[
+            self.equipped_weapon
+        ]
+
+        next_level = (
+            weapon["level"] + 1
+        )
+
+        price = next_level * 50
+
+        if self.level < next_level:
+
+            self.show_message(
+                f"You must be level "
+                f"{next_level}."
+            )
+
+            return
+
+        if self.coins < price:
+
+            self.show_message(
+                "You do not have enough coins."
+            )
+
+            return
+
+        self.coins -= price
+
+        weapon["level"] += 1
+
+        self.display(
+            f"{self.equipped_weapon} reaches "
+            f"level {weapon['level']}."
+        )
+
+        self.update_interface()
+
+    # ========================================================
+    # UPGRADE ARMOR
+    # ========================================================
+
+    def upgrade_armor(self):
+
+        armor = self.armors[
+            self.equipped_armor
+        ]
+
+        next_level = (
+            armor["level"] + 1
+        )
+
+        price = next_level * 60
+
+        if self.level < next_level:
+
+            self.show_message(
+                f"You must be level "
+                f"{next_level}."
+            )
+
+            return
+
+        if self.coins < price:
+
+            self.show_message(
+                "You do not have enough coins."
+            )
+
+            return
+
+        self.coins -= price
+
+        armor["level"] += 1
+
+        self.display(
+            f"{self.equipped_armor} reaches "
+            f"level {armor['level']}."
+        )
+
+        self.update_interface()
+
+    # ========================================================
+    # CLASSES
+    # ========================================================
+
+    def class_menu(self):
+
+        window = tk.Toplevel(
+            self.root
+        )
+
+        window.title(
+            "Classes"
+        )
+
+        window.configure(
+            bg="black"
+        )
+
+        window.attributes(
+            "-fullscreen",
+            True
+        )
 
         tk.Label(
-            fenetre,
+            window,
             text="CLASSES",
             bg="black",
             fg="white",
-            font=("Arial", 30, "bold")
+            font=("Arial", 28, "bold")
         ).pack(pady=20)
 
         tk.Label(
-            fenetre,
-            text=(
-                f"Classe actuelle : "
-                f"{self.classe or 'Aucune'}"
-            ),
+            window,
+            text=f"Current class: {self.current_class}",
             bg="black",
             fg="white",
-            font=("Arial", 18)
-        ).pack(pady=10)
+            font=("Arial", 15)
+        ).pack(pady=5)
 
-        for nom_classe, info in self.classes.items():
+        for class_name, info in self.classes.items():
 
-            if nom_classe in self.classes_achetees:
+            if class_name in self.owned_classes:
 
-                texte = f"{nom_classe} - ACHETÉE"
+                if class_name == self.current_class:
 
-                if self.classe == nom_classe:
-                    texte += " - ÉQUIPÉE"
+                    text = (
+                        f"{class_name}\n"
+                        f"EQUIPPED"
+                    )
 
-                tk.Button(
-                    fenetre,
-                    text=texte,
-                    command=lambda c=nom_classe:
-                    self.equiper_classe(c),
-                    bg="#202020",
-                    fg="white",
-                    activebackground="#404040",
-                    activeforeground="white",
-                    width=45,
-                    height=3,
-                    font=("Arial", 13)
-                ).pack(pady=7)
+                else:
 
-                continue
+                    text = (
+                        f"{class_name}\n"
+                        f"OWNED - click to equip"
+                    )
 
-            texte = (
-                f"{nom_classe}\n"
-                f"{info['prix']} pièces | "
-                f"Niveau {info['niveau_requis']}\n"
-                f"+{info['attaque']} ATK | "
-                f"+{info['defense']} DEF | "
-                f"+{info['pv']} PV | "
-                f"+{info['mana']} Mana"
-            )
+            else:
 
-            if info["esquive"] > 0:
-                texte += (
-                    f"\n+{info['esquive']}% esquive"
-                )
-
-            if info["reduction_mana"] > 0:
-                texte += (
-                    f"\n-{info['reduction_mana']}% coût des sorts"
+                text = (
+                    f"{class_name}\n"
+                    f"{info['price']} coins | "
+                    f"+{info['attack']} ATK | "
+                    f"+{info['defense']} DEF | "
+                    f"+{info['hp']} HP | "
+                    f"+{info['mana']} Mana"
                 )
 
             tk.Button(
-                fenetre,
-                text=texte,
-                command=lambda c=nom_classe:
-                self.acheter_classe(c),
+                window,
+                text=text,
+                command=lambda c=class_name:
+                self.buy_class(c),
                 bg="#202020",
                 fg="white",
                 activebackground="#404040",
                 activeforeground="white",
                 width=55,
-                height=4,
-                font=("Arial", 11)
-            ).pack(pady=7)
+                height=3
+            ).pack(pady=5)
 
         tk.Button(
-            fenetre,
-            text="Retour",
-            command=fenetre.destroy,
+            window,
+            text="Back",
+            command=window.destroy,
             bg="#202020",
             fg="white",
             activebackground="#404040",
             activeforeground="white",
             width=20,
             height=2
+        ).pack(pady=15)
+
+    # ========================================================
+    # BUY / EQUIP CLASS
+    # ========================================================
+
+    def buy_class(
+        self,
+        class_name
+    ):
+
+        if class_name in self.owned_classes:
+
+            self.current_class = class_name
+
+            self.hp = min(
+                self.hp,
+                self.get_max_hp()
+            )
+
+            self.mana = min(
+                self.mana,
+                self.get_max_mana()
+            )
+
+            self.display(
+                f"You equip the "
+                f"{class_name} class."
+            )
+
+            self.update_interface()
+
+            return
+
+        info = self.classes[
+            class_name
+        ]
+
+        if self.coins < info["price"]:
+
+            self.show_message(
+                "You do not have enough coins."
+            )
+
+            return
+
+        self.coins -= info["price"]
+
+        self.owned_classes.append(
+            class_name
+        )
+
+        self.current_class = class_name
+
+        self.hp = self.get_max_hp()
+        self.mana = self.get_max_mana()
+
+        self.display(
+            f"You obtained the "
+            f"{class_name} class!"
+        )
+
+        self.update_interface()
+
+    # ========================================================
+    # INVENTORY
+    # ========================================================
+
+    def inventory(self):
+
+        window = tk.Toplevel(
+            self.root
+        )
+
+        window.title(
+            "Inventory"
+        )
+
+        window.configure(
+            bg="black"
+        )
+
+        window.attributes(
+            "-fullscreen",
+            True
+        )
+
+        tk.Label(
+            window,
+            text="INVENTORY",
+            bg="black",
+            fg="white",
+            font=("Arial", 28, "bold")
+        ).pack(pady=15)
+
+        tk.Label(
+            window,
+            text=f"Equipped class: {self.current_class}",
+            bg="black",
+            fg="white",
+            font=("Arial", 16)
+        ).pack(pady=5)
+
+        # WEAPONS
+
+        tk.Label(
+            window,
+            text="WEAPONS",
+            bg="black",
+            fg="white",
+            font=("Arial", 18, "bold")
+        ).pack(pady=8)
+
+        for weapon in self.weapon_inventory:
+
+            info = self.weapons[weapon]
+
+            text = (
+                f"{weapon} | "
+                f"+{info['attack']} ATK | "
+                f"Level {info['level']}"
+            )
+
+            if weapon == self.equipped_weapon:
+
+                text += " | EQUIPPED"
+
+            tk.Button(
+                window,
+                text=text,
+                command=lambda w=weapon:
+                self.equip_weapon(w),
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=55,
+                height=2
+            ).pack(pady=2)
+
+        # ARMOR
+
+        tk.Label(
+            window,
+            text="ARMOR",
+            bg="black",
+            fg="white",
+            font=("Arial", 18, "bold")
+        ).pack(pady=10)
+
+        for armor in self.armor_inventory:
+
+            info = self.armors[armor]
+
+            text = (
+                f"{armor} | "
+                f"+{info['defense']} DEF | "
+                f"+{info['hp']} HP"
+            )
+
+            if armor == self.equipped_armor:
+
+                text += " | EQUIPPED"
+
+            tk.Button(
+                window,
+                text=text,
+                command=lambda a=armor:
+                self.equip_armor(a),
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=55,
+                height=2
+            ).pack(pady=2)
+
+        # SPELLS
+
+        tk.Label(
+            window,
+            text="LEARNED SPELLS",
+            bg="black",
+            fg="white",
+            font=("Arial", 18, "bold")
+        ).pack(pady=10)
+
+        if self.learned_spells:
+
+            for spell_name in self.learned_spells:
+
+                spell = self.spells[spell_name]
+
+                tk.Label(
+                    window,
+                    text=(
+                        f"{spell_name} | "
+                        f"{spell['mana']} mana"
+                    ),
+                    bg="black",
+                    fg="white",
+                    font=("Arial", 13)
+                ).pack(pady=2)
+
+        else:
+
+            tk.Label(
+                window,
+                text="No spells learned.",
+                bg="black",
+                fg="white"
+            ).pack()
+
+        tk.Button(
+            window,
+            text="Back",
+            command=window.destroy,
+            bg="#202020",
+            fg="white",
+            activebackground="#404040",
+            activeforeground="white",
+            width=20,
+            height=2
+        ).pack(pady=15)
+
+    # ========================================================
+    # EQUIP WEAPON
+    # ========================================================
+
+    def equip_weapon(
+        self,
+        weapon
+    ):
+
+        self.equipped_weapon = weapon
+
+        self.display(
+            f"You equip {weapon}."
+        )
+
+        self.update_interface()
+
+    # ========================================================
+    # EQUIP ARMOR
+    # ========================================================
+
+    def equip_armor(
+        self,
+        armor
+    ):
+
+        self.equipped_armor = armor
+
+        self.display(
+            f"You equip {armor}."
+        )
+
+        self.update_interface()
+
+    # ========================================================
+    # ZONES
+    # ========================================================
+
+    def zone_menu(self):
+
+        window = tk.Toplevel(
+            self.root
+        )
+
+        window.title(
+            "Zones"
+        )
+
+        window.configure(
+            bg="black"
+        )
+
+        window.attributes(
+            "-fullscreen",
+            True
+        )
+
+        tk.Label(
+            window,
+            text="CHOOSE A ZONE",
+            bg="black",
+            fg="white",
+            font=("Arial", 28, "bold")
         ).pack(pady=20)
 
-    # ========================================================
-    # ACHETER CLASSE
-    # ========================================================
+        order = [
+            "Plains",
+            "Forest",
+            "Mountain",
+            "Shadow Realm",
+            "Fallen Capital",
+            "Fallen Citadel",
+            "Abyss"
+        ]
 
-    def acheter_classe(self, nom_classe):
+        for zone_name in order:
 
-        info = self.classes[nom_classe]
+            zone = self.zones[
+                zone_name
+            ]
 
-        if nom_classe in self.classes_achetees:
-
-            self.message(
-                "Tu possèdes déjà cette classe."
+            text = (
+                f"{zone_name} "
+                f"(Level {zone['level']})"
             )
+
+            tk.Button(
+                window,
+                text=text,
+                command=lambda z=zone_name:
+                self.change_zone(
+                    z,
+                    window
+                ),
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=35,
+                height=2
+            ).pack(pady=4)
+
+        tk.Button(
+            window,
+            text="Back",
+            command=window.destroy,
+            bg="#202020",
+            fg="white",
+            activebackground="#404040",
+            activeforeground="white",
+            width=20,
+            height=2
+        ).pack(pady=15)
+
+    # ========================================================
+    # CHANGE ZONE
+    # ========================================================
+
+    def change_zone(
+        self,
+        zone_name,
+        window
+    ):
+
+        zone = self.zones[
+            zone_name
+        ]
+
+        if self.level < zone["level"]:
+
+            self.show_message(
+                f"You must be level "
+                f"{zone['level']}."
+            )
+
             return
 
-        if self.niveau < info["niveau_requis"]:
+        if self.mobs_defeated < zone["required_mobs"]:
 
-            self.message(
-                f"Niveau {info['niveau_requis']} requis."
+            self.show_message(
+                f"You must defeat "
+                f"{zone['required_mobs']} mobs."
             )
+
             return
 
-        if self.pieces < info["prix"]:
+        order = [
+            "Plains",
+            "Forest",
+            "Mountain",
+            "Shadow Realm",
+            "Fallen Capital",
+            "Fallen Citadel",
+            "Abyss"
+        ]
 
-            self.message(
-                "Tu n'as pas assez de pièces."
+        index = order.index(
+            zone_name
+        )
+
+        if index > 0:
+
+            previous = order[
+                index - 1
+            ]
+
+            if not self.zones[
+                previous
+            ]["boss_defeated"]:
+
+                self.show_message(
+                    f"You must defeat the boss of "
+                    f"{previous} before entering here."
+                )
+
+                return
+
+        self.current_zone = zone_name
+
+        window.destroy()
+
+        self.display(
+            f"You enter the zone: "
+            f"{zone_name}"
+        )
+
+        self.update_interface()
+
+    # ========================================================
+    # BOSSES
+    # ========================================================
+
+    def boss_menu(self):
+
+        window = tk.Toplevel(
+            self.root
+        )
+
+        window.title(
+            "Bosses"
+        )
+
+        window.configure(
+            bg="black"
+        )
+
+        window.attributes(
+            "-fullscreen",
+            True
+        )
+
+        tk.Label(
+            window,
+            text="AVAILABLE BOSSES",
+            bg="black",
+            fg="white",
+            font=("Arial", 28, "bold")
+        ).pack(pady=20)
+
+        order = [
+            "Plains",
+            "Forest",
+            "Mountain",
+            "Shadow Realm",
+            "Fallen Capital",
+            "Fallen Citadel",
+            "Abyss"
+        ]
+
+        for zone_name in order:
+
+            zone = self.zones[
+                zone_name
+            ]
+
+            text = (
+                f"{zone['boss']} "
+                f"(Lvl. {zone['level']})"
             )
+
+            if zone["boss_defeated"]:
+
+                text += " - DEFEATED"
+
+            tk.Button(
+                window,
+                text=text,
+                command=lambda z=zone_name:
+                self.start_boss(
+                    z,
+                    window
+                ),
+                bg="#202020",
+                fg="white",
+                activebackground="#404040",
+                activeforeground="white",
+                width=35,
+                height=2
+            ).pack(pady=4)
+
+        tk.Button(
+            window,
+            text="Back",
+            command=window.destroy,
+            bg="#202020",
+            fg="white",
+            activebackground="#404040",
+            activeforeground="white",
+            width=20,
+            height=2
+        ).pack(pady=15)
+
+    # ========================================================
+    # START BOSS
+    # ========================================================
+
+    def start_boss(
+        self,
+        zone_name,
+        window
+    ):
+
+        zone = self.zones[
+            zone_name
+        ]
+
+        if zone["boss_defeated"]:
+
+            self.show_message(
+                "You have already defeated this boss."
+            )
+
             return
 
-        self.pieces -= info["prix"]
+        if self.level < zone["level"]:
 
-        self.classes_achetees.append(
-            nom_classe
+            self.show_message(
+                f"You must be level "
+                f"{zone['level']}."
+            )
+
+            return
+
+        if self.mobs_defeated < zone["required_mobs"]:
+
+            self.show_message(
+                f"You must defeat "
+                f"{zone['required_mobs']} mobs."
+            )
+
+            return
+
+        order = [
+            "Plains",
+            "Forest",
+            "Mountain",
+            "Shadow Realm",
+            "Fallen Capital",
+            "Fallen Citadel",
+            "Abyss"
+        ]
+
+        index = order.index(
+            zone_name
         )
 
-        self.classe = nom_classe
+        if index > 0:
 
-        # Remet le joueur au maximum après
-        # l'application des bonus.
-        self.pv = self.get_pv_max()
-        self.mana = self.get_mana_max()
+            previous = order[
+                index - 1
+            ]
 
-        self.afficher(
-            f"Tu achètes la classe {nom_classe} !"
+            if not self.zones[
+                previous
+            ]["boss_defeated"]:
+
+                self.show_message(
+                    f"You must first defeat "
+                    f"the boss of {previous}."
+                )
+
+                return
+
+        window.destroy()
+
+        stats = zone[
+            "boss_stats"
+        ]
+
+        self.combat_interface(
+            zone["boss"],
+            stats[0],
+            stats[1],
+            stats[2],
+            stats[3],
+            stats[4],
+            boss=True,
+            boss_zone=zone_name
         )
-
-        self.message(
-            f"Classe obtenue : {nom_classe}\n\n"
-            f"Les bonus de la classe sont maintenant actifs."
-        )
-
-        self.actualiser()
 
     # ========================================================
-    # ÉQUIPER CLASSE
+    # SECRET ZONE
     # ========================================================
 
-    def equiper_classe(self, nom_classe):
+    def secret_zone(self):
 
-        ancienne_classe = self.classe
+        if self.mobs_defeated < 100:
 
-        self.classe = nom_classe
+            self.show_message(
+                "The secret zone is inaccessible."
+            )
 
-        # On ajuste les PV sans perdre les PV actuels.
-        ancien_max = self.get_pv_max()
+            return
 
-        self.afficher(
-            f"Tu équipes la classe {nom_classe}."
+        self.current_zone = "???"
+
+        self.display(
+            "A strange presence draws you in..."
         )
 
-        self.message(
-            f"Classe équipée : {nom_classe}"
+        self.display(
+            "You arrive in the ??? zone."
         )
 
-        self.pv = min(
-            self.pv,
-            ancien_max
-        )
-
-        self.mana = min(
-            self.mana,
-            self.get_mana_max()
-        )
-
-        self.actualiser()
+        self.update_interface()
 
     # ========================================================
-    # STATISTIQUES
+    # STATISTICS
     # ========================================================
 
-    def afficher_stats(self):
+    def show_stats(self):
 
-        classe = self.classe or "Aucune"
+        spells = (
+            ", ".join(self.learned_spells)
+            if self.learned_spells
+            else "None"
+        )
 
-        self.message(
+        self.show_message(
             f"===== STATS =====\n\n"
-            f"Nom : {self.nom}\n"
-            f"Niveau : {self.niveau}\n"
-            f"XP : {self.xp}/{self.niveau * 50}\n\n"
-            f"PV : {self.pv}/{self.get_pv_max()}\n"
-            f"Mana : {self.mana}/{self.get_mana_max()}\n"
-            f"Attaque : {self.get_attaque()}\n"
-            f"Défense : {self.get_defense()}\n\n"
-            f"Classe : {classe}\n"
-            f"Arme : {self.arme_equipee}\n"
-            f"Armure : {self.armure_equipee}\n\n"
-            f"Sorts appris : "
-            f"{len(self.sorts_appris)}\n"
-            f"Pièces : {self.pieces}\n"
-            f"Potions : {self.potions}\n"
-            f"Mobs vaincus : {self.mobs_vaincus}\n\n"
-            f"Zone : {self.zone_actuelle}"
+
+            f"Name: {self.name}\n"
+            f"Class: {self.current_class}\n"
+            f"Level: {self.level}\n"
+            f"XP: {self.xp}/{self.level * 50}\n\n"
+
+            f"HP: {self.hp}/{self.get_max_hp()}\n"
+            f"Mana: {self.mana}/{self.get_max_mana()}\n"
+            f"Attack: {self.get_attack()}\n"
+            f"Defense: {self.get_defense()}\n\n"
+
+            f"Weapon: {self.equipped_weapon}\n"
+            f"Armor: {self.equipped_armor}\n\n"
+
+            f"Spells: {spells}\n\n"
+
+            f"Coins: {self.coins}\n"
+            f"Potions: {self.potions}\n"
+            f"Mobs defeated: {self.mobs_defeated}\n\n"
+
+            f"Zone: {self.current_zone}"
         )
 
     # ========================================================
-    # MORT
+    # DEATH
     # ========================================================
 
-    def mort(self):
+    def death(self):
 
         messagebox.showinfo(
             "SHADOW RPG",
-            f"Tu es mort.\n\n"
-            f"Niveau atteint : {self.niveau}\n"
-            f"Mobs vaincus : {self.mobs_vaincus}",
+            f"You died.\n\n"
+            f"Level reached: {self.level}\n"
+            f"Mobs defeated: {self.mobs_defeated}",
             parent=self.root
         )
 
@@ -2675,16 +3128,11 @@ class ShadowRPG:
 
 
 # ============================================================
-# LANCEMENT
+# LAUNCH
 # ============================================================
 
 root = tk.Tk()
 
-jeu = ShadowRPG(root)
-
-root.bind(
-    "<Escape>",
-    jeu.quitter_jeu
-)
+game = ShadowRPG(root)
 
 root.mainloop()
