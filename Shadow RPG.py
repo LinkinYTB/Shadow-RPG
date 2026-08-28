@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
+from pathlib import Path
+from PIL import Image, ImageTk, ImageOps
 
 
 # ============================================================
@@ -16,6 +18,54 @@ class ShadowRPG:
         self.root.title("SHADOW RPG")
         self.root.configure(bg="black")
         self.root.attributes("-fullscreen", True)
+
+        # ====================================================
+        # BACKGROUND IMAGE
+        # ====================================================
+        # The image is searched in the SAME folder as this .py file.
+        # This works even if the game is launched from another folder.
+        self.game_folder = Path(__file__).resolve().parent
+        self.image_path = self.game_folder / "images.jpeg"
+
+        if self.image_path.exists():
+            self.background_image = Image.open(
+                self.image_path
+            ).convert("RGB")
+
+            screen_width = self.root.winfo_screenwidth()
+            screen_height = self.root.winfo_screenheight()
+
+            self.background_image = ImageOps.fit(
+                self.background_image,
+                (screen_width, screen_height),
+                method=Image.Resampling.LANCZOS
+            )
+
+            self.background_photo = ImageTk.PhotoImage(
+                self.background_image
+            )
+
+            self.background_label = tk.Label(
+                self.root,
+                image=self.background_photo,
+                bd=0
+            )
+
+            self.background_label.place(
+                x=0,
+                y=0,
+                relwidth=1,
+                relheight=1
+            )
+
+            self.background_label.lower()
+
+        else:
+            # If the image is missing, the game still starts normally.
+            self.background_label = None
+            print(
+                f"WARNING: Image not found: {self.image_path}"
+            )
 
         self.bg = "black"
         self.fg = "white"
@@ -310,7 +360,7 @@ class ShadowRPG:
 
             "Plains": {
                 "level": 1,
-                "boss": "Plains Boss",
+                "boss": "Plain Warrior",
                 "boss_defeated": False,
                 "required_mobs": 0,
 
@@ -325,7 +375,7 @@ class ShadowRPG:
 
             "Forest": {
                 "level": 3,
-                "boss": "Forest Boss",
+                "boss": "Goblin Master",
                 "boss_defeated": False,
                 "required_mobs": 10,
 
@@ -340,7 +390,7 @@ class ShadowRPG:
 
             "Mountain": {
                 "level": 6,
-                "boss": "Mountain Boss",
+                "boss": "Dark Dragon King",
                 "boss_defeated": False,
                 "required_mobs": 20,
 
